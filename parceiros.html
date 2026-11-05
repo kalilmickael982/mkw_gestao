@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MKW Gestão - Parceiros</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#14213D">
+    <link rel="apple-touch-icon" href="logomarca.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="MKW Gestão">
     <style>
         :root{
             --bg:#eaeef3; --surface:#ffffff; --surface-2:#f7f9fc;
@@ -29,15 +34,36 @@
         .sidebar li a { display: block; padding: 15px 25px; color: var(--nav-link); text-decoration: none; font-weight: 500; transition: all 0.3s ease; border-left: 4px solid transparent; }
         .sidebar li a:hover, .sidebar li a.active { color: #FFFFFF; background-color: rgba(255, 255, 255, 0.05); border-left-color: var(--accent); }
 
+        /* Rodapé da sidebar + botão Baixar App */
+        .sidebar-footer { margin-top: auto; padding: 15px; border-top: 1px solid rgba(255,255,255,.1); }
+        .btn-install { width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: var(--accent); color: #fff; border: none; padding: 11px 14px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: .9rem; }
+        .btn-install:hover { background: var(--accent-2); }
+
+        /* Topbar (apenas no celular) + overlay */
+        .topbar { display: none; }
+        .backdrop { display: none; }
+
         /* Main Content */
         .main-content { flex: 1; padding: 40px; overflow-x: auto; }
-        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 12px; }
         .page-header h1 { font-size: 1.8rem; color: var(--navy); }
+        .header-actions { display: flex; align-items: center; gap: 10px; }
         .btn-incluir { background-color: var(--accent); color: #FFFFFF; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-flex; align-items: center; gap: 8px; }
         .btn-incluir:hover { background-color: var(--accent-2); }
+        .btn-help { width: 40px; height: 40px; flex-shrink: 0; background: var(--surface); border: 1px solid var(--line-strong); color: var(--navy); border-radius: 6px; font-weight: bold; font-size: 1.1rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+        .btn-help:hover { border-color: var(--accent); color: var(--accent-2); }
 
-        .concept-box { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--accent); padding: 20px; border-radius: 6px; margin-bottom: 20px; font-size: 0.9rem; line-height: 1.6; color: var(--ink); box-shadow: 0 2px 4px rgba(15,27,45,0.05); }
-        .concept-box ul { margin-left: 20px; margin-top: 10px; }
+        /* Modal de ajuda (Conceito) */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(15,27,45,.5); z-index: 80; align-items: flex-start; justify-content: center; padding: 40px 20px; overflow-y: auto; }
+        .modal-overlay.show { display: flex; }
+        .modal { background: var(--surface); border-radius: 10px; max-width: 680px; width: 100%; box-shadow: 0 10px 40px rgba(0,0,0,.3); }
+        .modal-head { display: flex; justify-content: space-between; align-items: center; padding: 18px 22px; border-bottom: 1px solid var(--line); }
+        .modal-head h2 { font-size: 1.2rem; color: var(--navy); }
+        .modal-close { background: transparent; border: none; font-size: 1.6rem; line-height: 1; color: var(--muted); cursor: pointer; }
+        .modal-close:hover { color: var(--ink); }
+        .modal-body { padding: 20px 22px; font-size: .9rem; line-height: 1.6; color: var(--ink); }
+        .modal-body ul { margin: 12px 0 0 20px; }
+        .modal-body li { margin-bottom: 10px; }
 
         .alert { padding: 12px 15px; border-radius: 6px; margin-bottom: 20px; font-size: 0.88rem; line-height: 1.5; display: none; }
         .alert-warn { background: var(--warn-soft); border: 1px solid #e6cf9a; color: #6b4a12; }
@@ -69,11 +95,31 @@
         .pg-btn { background: var(--surface); border: 1px solid var(--line-strong); color: var(--ink-soft); padding: 5px 12px; border-radius: 4px; cursor: pointer; font-weight: 600; }
         .pg-btn:disabled { opacity: .45; cursor: default; }
         .pg-btn:not(:disabled):hover { border-color: var(--accent); color: var(--accent-2); }
+
+        /* ===== Responsivo: sidebar colapsável ===== */
+        @media (max-width: 768px){
+            body { flex-direction: column; }
+            .topbar { display: flex; align-items: center; gap: 12px; background: var(--navy); color: #fff; padding: 12px 16px; position: sticky; top: 0; z-index: 40; }
+            .topbar .menu-toggle { background: transparent; border: none; color: #fff; font-size: 1.5rem; cursor: pointer; line-height: 1; padding: 0; }
+            .topbar .topbar-title { font-weight: 600; font-size: 1.05rem; }
+            .sidebar { position: fixed; top: 0; left: 0; height: 100%; width: 260px; z-index: 60; transform: translateX(-100%); transition: transform .25s ease; }
+            .sidebar.open { transform: translateX(0); }
+            .backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 50; }
+            .backdrop.show { display: block; }
+            .main-content { padding: 20px; }
+            .page-header h1 { font-size: 1.4rem; }
+        }
     </style>
 </head>
 <body>
 
-    <aside class="sidebar">
+    <header class="topbar">
+        <button class="menu-toggle" onclick="toggleSidebar()" aria-label="Abrir menu">&#9776;</button>
+        <span class="topbar-title">MKW Gestão</span>
+    </header>
+    <div class="backdrop" id="backdrop" onclick="toggleSidebar(false)"></div>
+
+    <aside class="sidebar" id="sidebar">
         <div class="brand">
             <img src="logomarca.png" alt="MKW Gestão">
         </div>
@@ -82,23 +128,22 @@
             <li><a href="parceiros.html" class="active">Parceiros</a></li>
             <li><a href="produtos_servicos.html">Produtos e Serviços</a></li>
         </ul>
+        <div class="sidebar-footer">
+            <button class="btn-install" id="btnInstall" type="button">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16"/></svg>
+                Baixar App
+            </button>
+        </div>
     </aside>
 
     <main class="main-content">
         <header class="page-header">
             <h1>Gestão de Parceiros</h1>
-            <a href="incluir_parceiro.html" class="btn-incluir"><i class="fa-solid fa-plus"></i> Incluir Parceiro</a>
+            <div class="header-actions">
+                <button class="btn-help" type="button" onclick="abrirAjuda()" title="O que é a tabela de parceiros?" aria-label="Ajuda">?</button>
+                <a href="incluir_parceiro.html" class="btn-incluir"><i class="fa-solid fa-plus"></i> Incluir Parceiro</a>
+            </div>
         </header>
-
-        <div class="concept-box">
-            <p>A tabela de parceiros centraliza a gestão de todos os agentes externos e internos que mantêm relações comerciais ou operacionais com a empresa. Em vez de pulverizar as informações em cadastros isolados, o sistema utiliza essa estrutura unificada para classificar cada entidade de acordo com o papel desempenhado na operação, otimizando o controle fiscal, financeiro e logístico.</p>
-            <ul>
-                <li><strong>Cliente:</strong> Cadastro destinado às pessoas físicas ou jurídicas com as quais a empresa realiza a prestação de serviços ou a venda de produtos. É a modalidade associada diretamente aos processos do contas a receber, faturamento e emissão de notas fiscais de saída.</li>
-                <li><strong>Fornecedor:</strong> Registro voltado às entidades que abastecem a empresa com matérias-primas, mercadorias para revenda, insumos ou serviços. Este perfil está vinculado ao contas a pagar, controle de estoque e entrada de notas fiscais de compra.</li>
-                <li><strong>Transportador:</strong> Cadastro das empresas ou autônomos responsáveis pela movimentação logística das mercadorias. A seleção deste parceiro no sistema permite destacar os dados de frete, dados do veículo e da modalidade de transporte no corpo da nota fiscal ou recibo.</li>
-                <li><strong>Representante:</strong> Categoria que abrange os vendedores internos, consultores comerciais ou funcionários da empresa que intermediam as negociações. Esse vínculo facilita o acompanhamento de metas, comissões e histórico de vendas por colaborador.</li>
-            </ul>
-        </div>
 
         <div id="alertBox" class="alert alert-warn"></div>
 
@@ -139,14 +184,33 @@
         </div>
     </main>
 
+    <!-- Modal: Conceito da tabela de parceiros -->
+    <div class="modal-overlay" id="modalAjuda" onclick="if(event.target===this) fecharAjuda()">
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitulo">
+            <div class="modal-head">
+                <h2 id="modalTitulo">Tabela de Parceiros</h2>
+                <button class="modal-close" type="button" onclick="fecharAjuda()" aria-label="Fechar">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>A tabela de parceiros centraliza a gestão de todos os agentes externos e internos que mantêm relações comerciais ou operacionais com a empresa. Em vez de pulverizar as informações em cadastros isolados, o sistema utiliza essa estrutura unificada para classificar cada entidade de acordo com o papel desempenhado na operação, otimizando o controle fiscal, financeiro e logístico.</p>
+                <ul>
+                    <li><strong>Cliente:</strong> Cadastro destinado às pessoas físicas ou jurídicas com as quais a empresa realiza a prestação de serviços ou a venda de produtos. É a modalidade associada diretamente aos processos do contas a receber, faturamento e emissão de notas fiscais de saída.</li>
+                    <li><strong>Fornecedor:</strong> Registro voltado às entidades que abastecem a empresa com matérias-primas, mercadorias para revenda, insumos ou serviços. Este perfil está vinculado ao contas a pagar, controle de estoque e entrada de notas fiscais de compra.</li>
+                    <li><strong>Transportador:</strong> Cadastro das empresas ou autônomos responsáveis pela movimentação logística das mercadorias. A seleção deste parceiro no sistema permite destacar os dados de frete, dados do veículo e da modalidade de transporte no corpo da nota fiscal ou recibo.</li>
+                    <li><strong>Representante:</strong> Categoria que abrange os vendedores internos, consultores comerciais ou funcionários da empresa que intermediam as negociações. Esse vínculo facilita o acompanhamento de metas, comissões e histórico de vendas por colaborador.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
     <script>
         /* =========================================================
            CONFIGURAÇÃO
-           Cole abaixo a URL /exec do Web App do Apps Script da base
-           de Parceiros (mesma URL usada em incluir_parceiro.html).
+           URL /exec do Web App do Apps Script da base de Parceiros
+           (mesma URL usada em incluir_parceiro.html).
            Backend correspondente: parceiro.gs
            ========================================================= */
-        const API_URL = "";
+        const API_URL = "https://script.google.com/macros/s/AKfycby21S6xD13DmzErtWugyHwPSZmIfNtgZRr5YgmTFbLN6P7btPLcI2x1rjV4ejvLn5Jg8Q/exec";
 
         const PAGINA_TAMANHO = 100;   // Limite de 100 registros por página
         const COLUNAS = ["codigo","situacao","razao","cpfCnpj","regime","email","contato","cliente","fornecedor","transportador","representante","dataCad","municipio","uf"];
@@ -257,6 +321,45 @@
                 aplicarFiltros();
             });
         });
+
+        /* ===== Modal de ajuda (Conceito) ===== */
+        function abrirAjuda(){ document.getElementById('modalAjuda').classList.add('show'); }
+        function fecharAjuda(){ document.getElementById('modalAjuda').classList.remove('show'); }
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') fecharAjuda(); });
+
+        /* ===== Sidebar responsiva ===== */
+        function toggleSidebar(force){
+            const sb = document.getElementById('sidebar');
+            const bd = document.getElementById('backdrop');
+            if (!sb) return;
+            const abrir = (force === undefined) ? !sb.classList.contains('open') : force;
+            sb.classList.toggle('open', abrir);
+            if (bd) bd.classList.toggle('show', abrir);
+        }
+
+        /* ===== PWA: service worker ===== */
+        if ('serviceWorker' in navigator){
+            window.addEventListener('load', function(){
+                navigator.serviceWorker.register('service-worker.js').catch(function(){});
+            });
+        }
+
+        /* ===== Botão "Baixar App" (com tratamento iOS) ===== */
+        (function(){
+            var deferido = null;
+            var btn = document.getElementById('btnInstall');
+            if (!btn) return;
+            function isIOS(){ return /iphone|ipad|ipod/i.test(navigator.userAgent); }
+            function standalone(){ return window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true; }
+            if (standalone()){ btn.style.display = 'none'; return; }
+            window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); deferido = e; });
+            btn.addEventListener('click', async function(){
+                if (deferido){ deferido.prompt(); await deferido.userChoice; deferido = null; }
+                else if (isIOS()){ alert('Para instalar no iPhone/iPad:\n\n1. Toque no botão Compartilhar do Safari (ícone de seta para cima).\n2. Escolha "Adicionar à Tela de Início".'); }
+                else { alert('Para instalar: abra o menu do navegador (⋮) e escolha "Instalar aplicativo" ou "Adicionar à tela inicial".'); }
+            });
+            window.addEventListener('appinstalled', function(){ btn.style.display = 'none'; });
+        })();
 
         carregar();
     </script>
