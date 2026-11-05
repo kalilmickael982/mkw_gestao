@@ -8,7 +8,7 @@
    Ao mudar qualquer arquivo do app, suba a versão do cache
    (CACHE_NOME) para forçar a atualização nos dispositivos.
    ========================================================= */
-const CACHE_NOME = 'mkw-gestao-v1';
+const CACHE_NOME = 'mkw-gestao-v2';
 const ASSETS = [
   './',
   './index.html',
@@ -17,7 +17,17 @@ const ASSETS = [
   './produtos_servicos.html',
   './incluir_produtos_servicos.html',
   './manifest.json',
-  './logomarca.png'
+  './logomarca.png',
+  './favicon.ico',
+  './favicon-16.png',
+  './favicon-32.png',
+  './apple-touch-icon.png',
+  './apple-touch-icon-152.png',
+  './apple-touch-icon-167.png',
+  './icon-192.png',
+  './icon-512.png',
+  './icon-maskable-192.png',
+  './icon-maskable-512.png'
 ];
 
 self.addEventListener('install', (e) => {
