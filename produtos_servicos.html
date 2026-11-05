@@ -34,7 +34,10 @@
         body { display: flex; min-height: 100vh; background-color: var(--bg); color: var(--ink); }
 
         /* Sidebar Vertical */
-        .sidebar { width: 260px; background-color: var(--navy); color: #FFFFFF; display: flex; flex-direction: column; padding: 20px 0; flex-shrink: 0; }
+        .sidebar { width: 260px; background-color: var(--navy); color: #FFFFFF; display: flex; flex-direction: column; padding: 20px 0; flex-shrink: 0; position: sticky; top: 0; align-self: flex-start; height: 100vh; height: 100dvh; overflow-y: auto; }
+        .sidebar::-webkit-scrollbar { width: 8px; }
+        .sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,.18); border-radius: 4px; }
+        .sidebar { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.18) transparent; }
         .sidebar .brand { text-align: center; padding: 0 15px 20px 15px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 20px; background: transparent; }
         .sidebar .brand img { max-width: 100%; height: auto; display: block; margin: 0 auto; background: transparent; object-fit: contain; border-radius: 12px; }
         .sidebar ul { list-style: none; }
@@ -109,7 +112,7 @@
             .topbar { display: flex; align-items: center; gap: 12px; background: var(--navy); color: #fff; padding: 12px 16px; position: sticky; top: 0; z-index: 40; }
             .topbar .menu-toggle { background: transparent; border: none; color: #fff; font-size: 1.5rem; cursor: pointer; line-height: 1; padding: 0; }
             .topbar .topbar-title { font-weight: 600; font-size: 1.05rem; }
-            .sidebar { position: fixed; top: 0; left: 0; height: 100%; width: 260px; z-index: 60; transform: translateX(-100%); transition: transform .25s ease; }
+            .sidebar { position: fixed; top: 0; left: 0; height: 100%; height: 100dvh; width: 260px; z-index: 60; overflow-y: auto; transform: translateX(-100%); transition: transform .25s ease; }
             .sidebar.open { transform: translateX(0); }
             .backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 50; }
             .backdrop.show { display: block; }
