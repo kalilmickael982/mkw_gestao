@@ -122,23 +122,23 @@
 
         <form class="form-container" id="formProduto" onsubmit="salvar(event)">
             <div class="form-grid">
-                <div class="form-group"><label>Coluna A - Código</label><input type="text" id="codigo" value="" readonly></div>
-                <div class="form-group"><label>Coluna B - Situação</label>
+                <div class="form-group"><label>Código</label><input type="text" id="codigo" value="" readonly></div>
+                <div class="form-group"><label>Situação</label>
                     <select id="situacao">
                         <option>Ativa</option>
                         <option>Inativo</option>
                         <option>Fora de Linha</option>
                     </select>
                 </div>
-                <div class="form-group col-2"><label>Coluna C - Descrição</label><input type="text" id="descricao" required oninput="this.value = this.value.toUpperCase();"></div>
-                <div class="form-group"><label>Coluna D - Tipo</label>
+                <div class="form-group col-2"><label>Descrição</label><input type="text" id="descricao" required oninput="this.value = this.value.toUpperCase();"></div>
+                <div class="form-group"><label>Tipo</label>
                     <select id="tipo">
                         <option>Produto</option>
                         <option>Material</option>
                         <option>Serviço</option>
                     </select>
                 </div>
-                <div class="form-group"><label>Coluna G - Unidade de Medida</label>
+                <div class="form-group"><label>Unidade de Medida</label>
                     <select id="unidade">
                         <option>Unidade</option>
                         <option>Metros</option>
@@ -147,8 +147,8 @@
                         <option>Centímetros</option>
                     </select>
                 </div>
-                <div class="form-group"><label>Coluna E - Data de Cadastro</label><input type="text" id="dataCad" readonly></div>
-                <div class="form-group"><label>Coluna F - Data da Última Alteração</label><input type="text" id="dataAlt" readonly></div>
+                <div class="form-group"><label>Data de Cadastro</label><input type="text" id="dataCad" readonly></div>
+                <div class="form-group"><label>Data da Última Alteração</label><input type="text" id="dataAlt" readonly></div>
             </div>
             <div class="btn-container">
                 <a href="produtos_servicos.html" class="btn-cancel">Cancelar</a>
