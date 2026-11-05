@@ -106,13 +106,14 @@
             <table id="tabelaParceiros">
                 <thead>
                     <tr>
-                        <th>Código</th><th>Situação</th><th>Razão Social</th><th>CPF ou CNPJ</th><th>E-mail</th><th>Número de Contato</th><th>É Cliente?</th><th>É Fornecedor?</th><th>É Transportador?</th><th>É Representante?</th><th>Data de Cadastro</th><th>Município</th><th>UF</th><th>Ação</th>
+                        <th>Código</th><th>Situação</th><th>Razão Social</th><th>CPF ou CNPJ</th><th>Regime Tributário</th><th>E-mail</th><th>Número de Contato</th><th>É Cliente?</th><th>É Fornecedor?</th><th>É Transportador?</th><th>É Representante?</th><th>Data de Cadastro</th><th>Município</th><th>UF</th><th>Ação</th>
                     </tr>
                     <tr>
                         <th><input type="text" class="filter-input" data-col="codigo" placeholder="Filtrar..."></th>
                         <th><input type="text" class="filter-input" data-col="situacao" placeholder="Filtrar..."></th>
                         <th><input type="text" class="filter-input" data-col="razao" placeholder="Filtrar..."></th>
                         <th><input type="text" class="filter-input" data-col="cpfCnpj" placeholder="Filtrar..."></th>
+                        <th><input type="text" class="filter-input" data-col="regime" placeholder="Filtrar..."></th>
                         <th><input type="text" class="filter-input" data-col="email" placeholder="Filtrar..."></th>
                         <th><input type="text" class="filter-input" data-col="contato" placeholder="Filtrar..."></th>
                         <th><input type="text" class="filter-input" data-col="cliente" placeholder="Filtrar..."></th>
@@ -126,7 +127,7 @@
                     </tr>
                 </thead>
                 <tbody id="corpoTabela">
-                    <tr class="empty-row"><td colspan="14">Carregando registros...</td></tr>
+                    <tr class="empty-row"><td colspan="15">Carregando registros...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -143,11 +144,12 @@
            CONFIGURAÇÃO
            Cole abaixo a URL /exec do Web App do Apps Script da base
            de Parceiros (mesma URL usada em incluir_parceiro.html).
+           Backend correspondente: parceiro.gs
            ========================================================= */
         const API_URL = "";
 
         const PAGINA_TAMANHO = 100;   // Limite de 100 registros por página
-        const COLUNAS = ["codigo","situacao","razao","cpfCnpj","email","contato","cliente","fornecedor","transportador","representante","dataCad","municipio","uf"];
+        const COLUNAS = ["codigo","situacao","razao","cpfCnpj","regime","email","contato","cliente","fornecedor","transportador","representante","dataCad","municipio","uf"];
         const BADGE_COLS = ["situacao","cliente","fornecedor","transportador","representante"];
 
         let todos = [], filtrados = [], paginaAtual = 1;
@@ -179,7 +181,7 @@
             if (!API_URL){
                 mostrarAlerta('<strong>Configuração pendente:</strong> cole a URL <code>/exec</code> do Apps Script da base de Parceiros na constante <code>API_URL</code> no topo do script desta página.');
                 document.getElementById('corpoTabela').innerHTML =
-                    '<tr class="empty-row"><td colspan="14">Sem conexão com a base. Configure a API_URL.</td></tr>';
+                    '<tr class="empty-row"><td colspan="15">Sem conexão com a base. Configure a API_URL.</td></tr>';
                 return;
             }
             try {
@@ -193,7 +195,7 @@
                 mostrarAlerta('<strong>Não foi possível carregar a base:</strong> ' + err.message +
                     '. Verifique se o Web App está publicado com acesso "Qualquer pessoa".');
                 document.getElementById('corpoTabela').innerHTML =
-                    '<tr class="empty-row"><td colspan="14">Falha ao carregar registros.</td></tr>';
+                    '<tr class="empty-row"><td colspan="15">Falha ao carregar registros.</td></tr>';
             }
         }
 
@@ -219,7 +221,7 @@
             const pagina = filtrados.slice(inicio, inicio + PAGINA_TAMANHO);
 
             if (pagina.length === 0){
-                corpo.innerHTML = '<tr class="empty-row"><td colspan="14">Nenhum registro encontrado.</td></tr>';
+                corpo.innerHTML = '<tr class="empty-row"><td colspan="15">Nenhum registro encontrado.</td></tr>';
             } else {
                 corpo.innerHTML = pagina.map(r => {
                     const id = encodeURIComponent(r.codigo);
