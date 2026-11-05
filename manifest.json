@@ -1,0 +1,17 @@
+{
+  "id": "mkw-gestao",
+  "name": "MKW Gestão",
+  "short_name": "MKW Gestão",
+  "description": "ERP MKW Gestão — Contabilidade & Integração de Resultados",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#14213D",
+  "theme_color": "#14213D",
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "logomarca.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "logomarca.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}
