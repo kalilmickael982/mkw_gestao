@@ -25,6 +25,7 @@
             --warn:#b07d2f; --warn-soft:#f6ecd8;
             --neg:#b0413a; --neg-2:#95372f; --neg-soft:#f7e5e4;
             --info:#1b4f8a; --info-2:#2b66a8; --info-soft:#dce8f6;
+            --yellow:#f4b400; --yellow-2:#d99e00;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { display: flex; min-height: 100vh; background-color: var(--bg); color: var(--ink); }
@@ -77,6 +78,8 @@
         .btn-save { background-color: var(--pos); color: #FFFFFF; padding: 12px 24px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
         .btn-save:hover { background-color: var(--pos-2); }
         .btn-save:disabled { opacity: .6; cursor: default; }
+        .btn-edit { background-color: var(--yellow); color: var(--navy); padding: 12px 24px; border: none; border-radius: 6px; font-weight: bold; text-decoration: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-edit:hover { background-color: var(--yellow-2); }
 
         /* ===== Responsivo: sidebar colapsável ===== */
         @media (max-width: 768px){
@@ -196,6 +199,7 @@
 
             <div class="btn-container">
                 <a href="parceiros.html" class="btn-cancel">Cancelar</a>
+                <a id="btnAlterar" class="btn-edit" style="display:none;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg> Alterar</a>
                 <button type="submit" class="btn-save" id="btnSalvar">Salvar</button>
             </div>
         </form>
@@ -284,6 +288,9 @@
                 if (mode === 'view'){
                     bloquearTudo();
                     el('btnSalvar').style.display = 'none';
+                    const ba = el('btnAlterar');
+                    ba.href = 'incluir_parceiro.html?id=' + encodeURIComponent(idParam) + '&mode=edit';
+                    ba.style.display = 'inline-flex';
                 }
             } else {
                 el('dataCad').value = new Date().toLocaleDateString('pt-BR');
