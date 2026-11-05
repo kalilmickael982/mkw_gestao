@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MKW Gestão - Cadastrar Produto / Serviço</title>
+    <style>
+        :root{
+            --bg:#eaeef3; --surface:#ffffff; --surface-2:#f7f9fc;
+            --ink:#0f1b2d; --ink-soft:#3d4a5c; --muted:#7c8899;
+            --line:#e3e8ef; --line-strong:#c9d2de;
+            --navy:#0f2136; --nav-link:#a9b6c7;
+            --accent:#b0894f; --accent-2:#9a7540; --accent-soft:#efe4cf;
+            --pos:#1f7a5c; --pos-2:#18634a; --pos-soft:#e3f1ea;
+            --warn:#b07d2f; --warn-soft:#f6ecd8;
+            --neg:#b0413a; --neg-2:#95372f; --neg-soft:#f7e5e4;
+            --info:#1b4f8a; --info-2:#2b66a8; --info-soft:#dce8f6;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { display: flex; min-height: 100vh; background-color: var(--bg); color: var(--ink); }
+
+        /* Sidebar Vertical */
+        .sidebar { width: 260px; background-color: var(--navy); color: #FFFFFF; display: flex; flex-direction: column; padding: 20px 0; flex-shrink: 0; }
+        .sidebar .brand { text-align: center; padding: 0 15px 20px 15px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 20px; background: transparent; }
+        .sidebar .brand img { max-width: 100%; height: auto; display: block; margin: 0 auto; background: transparent; object-fit: contain; border-radius: 12px; }
+        .sidebar ul { list-style: none; }
+        .sidebar li a { display: block; padding: 15px 25px; color: var(--nav-link); text-decoration: none; font-weight: 500; transition: all 0.3s ease; border-left: 4px solid transparent; }
+        .sidebar li a:hover, .sidebar li a.active { color: #FFFFFF; background-color: rgba(255, 255, 255, 0.05); border-left-color: var(--accent); }
+
+        /* Main Content */
+        .main-content { flex: 1; padding: 40px; position: relative; padding-bottom: 100px; }
+        .form-container { background: var(--surface); border: 1px solid var(--line); padding: 30px; border-radius: 8px; box-shadow: 0 1px 2px rgba(15,27,45,.05), 0 6px 22px rgba(15,27,45,.07); }
+        .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        .form-group { display: flex; flex-direction: column; }
+        .col-2 { grid-column: span 2; }
+        label { font-size: 0.85rem; font-weight: 600; color: var(--navy); margin-bottom: 5px; }
+        input, select { padding: 8px 10px; border: 1px solid var(--line-strong); border-radius: 4px; font-size: 0.9rem; outline: none; color: var(--ink); background: var(--surface); }
+        input:focus, select:focus { border-color: var(--accent); }
+        input[readonly] { background-color: var(--surface-2); cursor: not-allowed; color: var(--muted); }
+        input:disabled, select:disabled { background-color: var(--surface-2); color: var(--muted); cursor: not-allowed; }
+
+        .alert { padding: 12px 15px; border-radius: 6px; margin-bottom: 20px; font-size: 0.88rem; line-height: 1.5; display: none; }
+        .alert-warn { background: var(--warn-soft); border: 1px solid #e6cf9a; color: #6b4a12; }
+        .alert-info { background: var(--info-soft); border: 1px solid #bcd3ee; color: var(--info); }
+        .alert.show { display: block; }
+
+        /* Botões Canto Inferior Direito */
+        .btn-container { position: fixed; bottom: 20px; right: 40px; display: flex; gap: 10px; background-color: rgba(234, 238, 243, 0.92); padding: 10px; border-radius: 8px; }
+        .btn-cancel { background-color: var(--neg); color: #FFFFFF; padding: 12px 24px; border: none; border-radius: 6px; font-weight: bold; text-decoration: none; cursor: pointer; }
+        .btn-cancel:hover { background-color: var(--neg-2); }
+        .btn-save { background-color: var(--pos); color: #FFFFFF; padding: 12px 24px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .btn-save:hover { background-color: var(--pos-2); }
+        .btn-save:disabled { opacity: .6; cursor: default; }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="brand">
+            <img src="logomarca.png" alt="MKW Gestão">
+        </div>
+        <ul>
+            <li><a href="index.html">Painel de Controle</a></li>
+            <li><a href="parceiros.html">Parceiros</a></li>
+            <li><a href="produtos_servicos.html" class="active">Produtos e Serviços</a></li>
+        </ul>
+    </aside>
+
+    <main class="main-content">
+        <h1 style="margin-bottom: 20px; color: var(--navy);" id="pageTitle">Cadastramento de Produtos e Serviços</h1>
+
+        <div id="alertBox" class="alert"></div>
+
+        <form class="form-container" id="formProduto" onsubmit="salvar(event)">
+            <div class="form-grid">
+                <div class="form-group"><label>Coluna A - Código</label><input type="text" id="codigo" value="" readonly></div>
+                <div class="form-group"><label>Coluna B - Situação</label>
+                    <select id="situacao">
+                        <option>Ativa</option>
+                        <option>Inativo</option>
+                        <option>Fora de Linha</option>
+                    </select>
+                </div>
+                <div class="form-group col-2"><label>Coluna C - Descrição</label><input type="text" id="descricao" required oninput="this.value = this.value.toUpperCase();"></div>
+                <div class="form-group"><label>Coluna D - Tipo</label>
+                    <select id="tipo">
+                        <option>Produto</option>
+                        <option>Material</option>
+                        <option>Serviço</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>Coluna G - Unidade de Medida</label>
+                    <select id="unidade">
+                        <option>Unidade</option>
+                        <option>Metros</option>
+                        <option>Metros Quadrados</option>
+                        <option>Milímetros</option>
+                        <option>Centímetros</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>Coluna E - Data de Cadastro</label><input type="text" id="dataCad" readonly></div>
+                <div class="form-group"><label>Coluna F - Data da Última Alteração</label><input type="text" id="dataAlt" readonly></div>
+            </div>
+            <div class="btn-container">
+                <a href="produtos_servicos.html" class="btn-cancel">Cancelar</a>
+                <button type="submit" class="btn-save" id="btnSalvar">Salvar</button>
+            </div>
+        </form>
+    </main>
+
+    <script>
+        /* =========================================================
+           CONFIGURAÇÃO
+           Cole abaixo a URL /exec do Web App do Apps Script publicado
+           (mesma URL usada em produtos_servicos.html).
+           ========================================================= */
+        const API_URL = "https://script.google.com/macros/s/AKfycbzzhZCKi0nXzRuYCBJOIPNi86dSYW7Um-KH95Ad0hlWelbQd_tQ-ogyWg7c7nMFo0k2Qg/exec";
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const mode = urlParams.get('mode');          // 'edit' | 'view' | null (novo)
+        const idParam = urlParams.get('id');          // código quando edit/view
+
+        const el = id => document.getElementById(id);
+
+        function agora(){
+            const n = new Date();
+            return n.toLocaleDateString('pt-BR') + ' ' +
+                String(n.getHours()).padStart(2,'0') + ':' + String(n.getMinutes()).padStart(2,'0');
+        }
+
+        function alerta(msg, tipo){
+            const a = el('alertBox');
+            a.className = 'alert show ' + (tipo === 'info' ? 'alert-info' : 'alert-warn');
+            a.innerHTML = msg;
+        }
+
+        function bloquearTudo(){
+            document.querySelectorAll('#formProduto input, #formProduto select').forEach(c => c.disabled = true);
+        }
+
+        async function iniciar(){
+            if (mode === 'view' || mode === 'edit'){
+                // Carrega registro existente
+                el('pageTitle').innerText = (mode === 'view')
+                    ? 'Visualizar Produto / Serviço'
+                    : 'Alterar Produto / Serviço';
+
+                if (!API_URL){
+                    alerta('<strong>Configuração pendente:</strong> cole a URL <code>/exec</code> do Apps Script na constante <code>API_URL</code> para carregar o registro.');
+                    return;
+                }
+                try {
+                    const resp = await fetch(API_URL + '?action=get&id=' + encodeURIComponent(idParam), { method:'GET' });
+                    const json = await resp.json();
+                    if (!json.ok || !json.data) throw new Error(json.error || 'Registro não encontrado.');
+                    const r = json.data;
+                    el('codigo').value   = r.codigo   || '';
+                    el('situacao').value = r.situacao || 'Ativa';
+                    el('descricao').value= r.descricao|| '';
+                    el('tipo').value     = r.tipo     || 'Produto';
+                    el('unidade').value  = r.unidade  || 'Unidade';
+                    el('dataCad').value  = r.dataCad  || '';
+                    el('dataAlt').value  = r.dataAlt  || '';
+                    // Em alteração, a Data de Última Alteração (Col. F) reflete o momento da edição
+                    if (mode === 'edit') el('dataAlt').value = agora();
+                } catch(err){
+                    alerta('<strong>Falha ao carregar o registro:</strong> ' + err.message);
+                    return;
+                }
+
+                if (mode === 'view'){
+                    bloquearTudo();
+                    el('btnSalvar').style.display = 'none';
+                }
+            } else {
+                // Novo cadastro: datas = agora; código = próximo da base
+                el('dataCad').value = agora();
+                el('dataAlt').value = agora();
+
+                if (!API_URL){
+                    el('codigo').value = '';
+                    alerta('<strong>Configuração pendente:</strong> cole a URL <code>/exec</code> do Apps Script na constante <code>API_URL</code> para gerar o código e gravar na base.');
+                    return;
+                }
+                try {
+                    const resp = await fetch(API_URL + '?action=next', { method:'GET' });
+                    const json = await resp.json();
+                    if (json.ok) el('codigo').value = json.codigo || '';
+                } catch(err){
+                    alerta('Não foi possível obter o próximo código automaticamente. Ele será gerado ao salvar.', 'info');
+                }
+            }
+        }
+
+        async function salvar(e){
+            e.preventDefault();
+            if (!API_URL){
+                alerta('<strong>Não é possível salvar:</strong> configure a constante <code>API_URL</code> com a URL do Apps Script.');
+                return;
+            }
+            const btn = el('btnSalvar');
+            btn.disabled = true;
+            btn.textContent = 'Salvando...';
+
+            const payload = {
+                mode: (mode === 'edit') ? 'update' : 'insert',
+                codigo:    el('codigo').value,            // chave em edição; ignorado no insert (servidor gera)
+                situacao:  el('situacao').value,
+                descricao: el('descricao').value.toUpperCase(),
+                tipo:      el('tipo').value,
+                unidade:   el('unidade').value
+            };
+
+            try {
+                const resp = await fetch(API_URL, {
+                    method: 'POST',
+                    // text/plain evita o preflight CORS do Apps Script
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(payload)
+                });
+                const json = await resp.json();
+                if (!json.ok) throw new Error(json.error || 'Erro ao gravar na base.');
+                // Sucesso -> volta para a listagem
+                window.location.href = 'produtos_servicos.html';
+            } catch(err){
+                alerta('<strong>Não foi possível salvar:</strong> ' + err.message);
+                btn.disabled = false;
+                btn.textContent = 'Salvar';
+            }
+        }
+
+        iniciar();
+    </script>
+</body>
+</html>

@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MKW Gestão - Parceiros</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root{
+            --bg:#eaeef3; --surface:#ffffff; --surface-2:#f7f9fc;
+            --ink:#0f1b2d; --ink-soft:#3d4a5c; --muted:#7c8899;
+            --line:#e3e8ef; --line-strong:#c9d2de;
+            --navy:#0f2136; --nav-link:#a9b6c7;
+            --accent:#b0894f; --accent-2:#9a7540; --accent-soft:#efe4cf;
+            --pos:#1f7a5c; --pos-2:#18634a; --pos-soft:#e3f1ea;
+            --warn:#b07d2f; --warn-soft:#f6ecd8;
+            --neg:#b0413a; --neg-2:#95372f; --neg-soft:#f7e5e4;
+            --info:#1b4f8a; --info-2:#2b66a8; --info-soft:#dce8f6;
+            --yellow:#f4b400; --yellow-2:#d99e00;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { display: flex; min-height: 100vh; background-color: var(--bg); color: var(--ink); }
+
+        /* Sidebar Vertical */
+        .sidebar { width: 260px; background-color: var(--navy); color: #FFFFFF; display: flex; flex-direction: column; padding: 20px 0; flex-shrink: 0; }
+        .sidebar .brand { text-align: center; padding: 0 15px 20px 15px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 20px; background: transparent; }
+        .sidebar .brand img { max-width: 100%; height: auto; display: block; margin: 0 auto; background: transparent; object-fit: contain; border-radius: 12px; }
+        .sidebar ul { list-style: none; }
+        .sidebar li a { display: block; padding: 15px 25px; color: var(--nav-link); text-decoration: none; font-weight: 500; transition: all 0.3s ease; border-left: 4px solid transparent; }
+        .sidebar li a:hover, .sidebar li a.active { color: #FFFFFF; background-color: rgba(255, 255, 255, 0.05); border-left-color: var(--accent); }
+
+        /* Main Content */
+        .main-content { flex: 1; padding: 40px; overflow-x: auto; }
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .page-header h1 { font-size: 1.8rem; color: var(--navy); }
+        .btn-incluir { background-color: var(--accent); color: #FFFFFF; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-incluir:hover { background-color: var(--accent-2); }
+
+        .concept-box { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--accent); padding: 20px; border-radius: 6px; margin-bottom: 20px; font-size: 0.9rem; line-height: 1.6; color: var(--ink); box-shadow: 0 2px 4px rgba(15,27,45,0.05); }
+        .concept-box ul { margin-left: 20px; margin-top: 10px; }
+
+        .alert { padding: 12px 15px; border-radius: 6px; margin-bottom: 20px; font-size: 0.88rem; line-height: 1.5; display: none; }
+        .alert-warn { background: var(--warn-soft); border: 1px solid #e6cf9a; color: #6b4a12; }
+        .alert.show { display: block; }
+
+        /* Tabela */
+        .table-container { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 1px 2px rgba(15,27,45,.05), 0 6px 22px rgba(15,27,45,.07); overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem; }
+        th, td { padding: 10px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; color: var(--ink); }
+        th { background-color: var(--navy); color: #FFFFFF; font-weight: 600; }
+        tbody tr:hover { background-color: var(--surface-2); }
+        .filter-input { width: 100%; min-width: 90px; padding: 4px 6px; font-size: 0.8rem; border: 1px solid var(--line-strong); border-radius: 4px; outline: none; margin-top: 5px; }
+        .filter-input:focus { border-color: var(--accent); }
+        .empty-row td { text-align: center; color: var(--muted); padding: 24px; }
+
+        /* Badges de Status e Opções */
+        .badge-sim-ativa { background-color: var(--pos-soft); color: var(--pos-2); font-weight: bold; padding: 4px 8px; border-radius: 4px; display: inline-block; }
+        .badge-nao-inativo { background-color: var(--neg-soft); color: var(--neg-2); font-weight: bold; padding: 4px 8px; border-radius: 4px; display: inline-block; }
+
+        /* Botões de Ação */
+        .action-btn { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 4px; text-decoration: none; margin-right: 4px; }
+        .btn-alterar { background-color: var(--yellow); color: var(--navy); }
+        .btn-alterar:hover { background-color: var(--yellow-2); }
+        .btn-visualizar { background-color: var(--info-2); color: #fff; }
+        .btn-visualizar:hover { background-color: var(--info); }
+
+        /* Paginação */
+        .pagination-bar { margin-top: 12px; display: flex; justify-content: flex-end; align-items: center; gap: 12px; font-size: 0.85rem; color: var(--muted); }
+        .pg-btn { background: var(--surface); border: 1px solid var(--line-strong); color: var(--ink-soft); padding: 5px 12px; border-radius: 4px; cursor: pointer; font-weight: 600; }
+        .pg-btn:disabled { opacity: .45; cursor: default; }
+        .pg-btn:not(:disabled):hover { border-color: var(--accent); color: var(--accent-2); }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="brand">
+            <img src="logomarca.png" alt="MKW Gestão">
+        </div>
+        <ul>
+            <li><a href="index.html">Painel de Controle</a></li>
+            <li><a href="parceiros.html" class="active">Parceiros</a></li>
+            <li><a href="produtos_servicos.html">Produtos e Serviços</a></li>
+        </ul>
+    </aside>
+
+    <main class="main-content">
+        <header class="page-header">
+            <h1>Gestão de Parceiros</h1>
+            <a href="incluir_parceiro.html" class="btn-incluir"><i class="fa-solid fa-plus"></i> Incluir Parceiro</a>
+        </header>
+
+        <div class="concept-box">
+            <p>A tabela de parceiros centraliza a gestão de todos os agentes externos e internos que mantêm relações comerciais ou operacionais com a empresa. Em vez de pulverizar as informações em cadastros isolados, o sistema utiliza essa estrutura unificada para classificar cada entidade de acordo com o papel desempenhado na operação, otimizando o controle fiscal, financeiro e logístico.</p>
+            <ul>
+                <li><strong>Cliente:</strong> Cadastro destinado às pessoas físicas ou jurídicas com as quais a empresa realiza a prestação de serviços ou a venda de produtos. É a modalidade associada diretamente aos processos do contas a receber, faturamento e emissão de notas fiscais de saída.</li>
+                <li><strong>Fornecedor:</strong> Registro voltado às entidades que abastecem a empresa com matérias-primas, mercadorias para revenda, insumos ou serviços. Este perfil está vinculado ao contas a pagar, controle de estoque e entrada de notas fiscais de compra.</li>
+                <li><strong>Transportador:</strong> Cadastro das empresas ou autônomos responsáveis pela movimentação logística das mercadorias. A seleção deste parceiro no sistema permite destacar os dados de frete, dados do veículo e da modalidade de transporte no corpo da nota fiscal ou recibo.</li>
+                <li><strong>Representante:</strong> Categoria que abrange os vendedores internos, consultores comerciais ou funcionários da empresa que intermediam as negociações. Esse vínculo facilita o acompanhamento de metas, comissões e histórico de vendas por colaborador.</li>
+            </ul>
+        </div>
+
+        <div id="alertBox" class="alert alert-warn"></div>
+
+        <div class="table-container">
+            <table id="tabelaParceiros">
+                <thead>
+                    <tr>
+                        <th>Código</th><th>Situação</th><th>Razão Social</th><th>CPF ou CNPJ</th><th>E-mail</th><th>Número de Contato</th><th>É Cliente?</th><th>É Fornecedor?</th><th>É Transportador?</th><th>É Representante?</th><th>Data de Cadastro</th><th>Município</th><th>UF</th><th>Ação</th>
+                    </tr>
+                    <tr>
+                        <th><input type="text" class="filter-input" data-col="codigo" placeholder="Filtrar..."></th>
+                        <th><input type="text" class="filter-input" data-col="situacao" placeholder="Filtrar..."></th>
+                        <th><input type="text" class="filter-input" data-col="razao" placeholder="Filtrar..."></th>
+                        <th><input type="text" class="filter-input" data-col="cpfCnpj" placeholder="Filtrar..."></th>
+                        <th><input type="text" class="filter-input" data-col="email" placeholder="Filtrar..."></th>
+                        <th><input type="text" class="filter-input" data-col="contato" placeholder="Filtrar..."></th>
+                        <th><input type="text" class="filter-input" data-col="cliente" placeholder="Filtrar..."></th>
+                        <th><input type="text" class="filter-input" data-col="fornecedor" placeholder="Filtrar..."></th>
+                        <th><input type="text" class="filter-input" data-col="transportador" placeholder="Filtrar..."></th>
+                        <th><input type="text" class="filter-input" data-col="representante" placeholder="Filtrar..."></th>
+                        <th><input type="text" class="filter-input" data-col="dataCad" placeholder="Filtrar..."></th>
+                        <th><input type="text" class="filter-input" data-col="municipio" placeholder="Filtrar..."></th>
+                        <th><input type="text" class="filter-input" data-col="uf" placeholder="Filtrar..."></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="corpoTabela">
+                    <tr class="empty-row"><td colspan="14">Carregando registros...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pagination-bar">
+            <button class="pg-btn" id="btnPrev" onclick="mudarPagina(-1)">Anterior</button>
+            <span id="paginaInfo">—</span>
+            <button class="pg-btn" id="btnNext" onclick="mudarPagina(1)">Próximo</button>
+        </div>
+    </main>
+
+    <script>
+        /* =========================================================
+           CONFIGURAÇÃO
+           Cole abaixo a URL /exec do Web App do Apps Script da base
+           de Parceiros (mesma URL usada em incluir_parceiro.html).
+           ========================================================= */
+        const API_URL = "";
+
+        const PAGINA_TAMANHO = 100;   // Limite de 100 registros por página
+        const COLUNAS = ["codigo","situacao","razao","cpfCnpj","email","contato","cliente","fornecedor","transportador","representante","dataCad","municipio","uf"];
+        const BADGE_COLS = ["situacao","cliente","fornecedor","transportador","representante"];
+
+        let todos = [], filtrados = [], paginaAtual = 1;
+        const filtros = {};
+        COLUNAS.forEach(c => filtros[c] = "");
+
+        function mostrarAlerta(msg){
+            const a = document.getElementById('alertBox');
+            a.innerHTML = msg; a.classList.add('show');
+        }
+
+        function classeBadge(valor){
+            const v = (valor || "").trim().toLowerCase();
+            if (v === "sim" || v === "ativa" || v === "ativo") return "badge-sim-ativa";
+            if (v === "não" || v === "nao" || v === "inativo") return "badge-nao-inativo";
+            return "";
+        }
+
+        function celula(col, valor){
+            const texto = escapar(valor);
+            if (BADGE_COLS.includes(col)){
+                const cls = classeBadge(valor);
+                return cls ? '<span class="' + cls + '">' + texto + '</span>' : texto;
+            }
+            return texto || (col === "municipio" || col === "uf" ? "—" : "");
+        }
+
+        async function carregar(){
+            if (!API_URL){
+                mostrarAlerta('<strong>Configuração pendente:</strong> cole a URL <code>/exec</code> do Apps Script da base de Parceiros na constante <code>API_URL</code> no topo do script desta página.');
+                document.getElementById('corpoTabela').innerHTML =
+                    '<tr class="empty-row"><td colspan="14">Sem conexão com a base. Configure a API_URL.</td></tr>';
+                return;
+            }
+            try {
+                const resp = await fetch(API_URL + "?action=list", { method:"GET" });
+                const json = await resp.json();
+                if (!json.ok) throw new Error(json.error || "Resposta inválida da base.");
+                todos = json.data || [];
+                todos.sort((a,b) => String(a.codigo||"").localeCompare(String(b.codigo||""), 'pt-BR', { numeric:true }));
+                aplicarFiltros();
+            } catch(err){
+                mostrarAlerta('<strong>Não foi possível carregar a base:</strong> ' + err.message +
+                    '. Verifique se o Web App está publicado com acesso "Qualquer pessoa".');
+                document.getElementById('corpoTabela').innerHTML =
+                    '<tr class="empty-row"><td colspan="14">Falha ao carregar registros.</td></tr>';
+            }
+        }
+
+        function aplicarFiltros(){
+            filtrados = todos.filter(r =>
+                COLUNAS.every(col => {
+                    const termo = filtros[col];
+                    if (!termo) return true;
+                    return String(r[col] || "").toLowerCase().includes(termo.toLowerCase());
+                })
+            );
+            paginaAtual = 1;
+            render();
+        }
+
+        function render(){
+            const corpo = document.getElementById('corpoTabela');
+            const total = filtrados.length;
+            const totalPaginas = Math.max(1, Math.ceil(total / PAGINA_TAMANHO));
+            if (paginaAtual > totalPaginas) paginaAtual = totalPaginas;
+
+            const inicio = (paginaAtual - 1) * PAGINA_TAMANHO;
+            const pagina = filtrados.slice(inicio, inicio + PAGINA_TAMANHO);
+
+            if (pagina.length === 0){
+                corpo.innerHTML = '<tr class="empty-row"><td colspan="14">Nenhum registro encontrado.</td></tr>';
+            } else {
+                corpo.innerHTML = pagina.map(r => {
+                    const id = encodeURIComponent(r.codigo);
+                    const tds = COLUNAS.map(col => '<td>' + celula(col, r[col]) + '</td>').join('');
+                    return '<tr>' + tds +
+                        '<td>' +
+                            '<a href="incluir_parceiro.html?id=' + id + '&mode=edit" class="action-btn btn-alterar" title="Alterar"><i class="fa-solid fa-pen"></i></a>' +
+                            '<a href="incluir_parceiro.html?id=' + id + '&mode=view" class="action-btn btn-visualizar" title="Visualizar"><i class="fa-solid fa-magnifying-glass"></i></a>' +
+                        '</td>' +
+                    '</tr>';
+                }).join('');
+            }
+
+            const fim = Math.min(inicio + PAGINA_TAMANHO, total);
+            document.getElementById('paginaInfo').textContent =
+                total === 0 ? 'Nenhum registro'
+                : (inicio + 1) + '–' + fim + ' de ' + total + '  (pág. ' + paginaAtual + '/' + totalPaginas + ')';
+            document.getElementById('btnPrev').disabled = paginaAtual <= 1;
+            document.getElementById('btnNext').disabled = paginaAtual >= totalPaginas;
+        }
+
+        function mudarPagina(d){ paginaAtual += d; render(); }
+
+        function escapar(v){
+            return String(v == null ? "" : v)
+                .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+                .replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+        }
+
+        document.querySelectorAll('.filter-input').forEach(inp => {
+            inp.addEventListener('keyup', () => {
+                filtros[inp.dataset.col] = inp.value;
+                aplicarFiltros();
+            });
+        });
+
+        carregar();
+    </script>
+</body>
+</html>

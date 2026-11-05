@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MKW Gestão - Cadastrar Parceiro</title>
+    <style>
+        :root{
+            --bg:#eaeef3; --surface:#ffffff; --surface-2:#f7f9fc;
+            --ink:#0f1b2d; --ink-soft:#3d4a5c; --muted:#7c8899;
+            --line:#e3e8ef; --line-strong:#c9d2de;
+            --navy:#0f2136; --nav-link:#a9b6c7;
+            --accent:#b0894f; --accent-2:#9a7540; --accent-soft:#efe4cf;
+            --pos:#1f7a5c; --pos-2:#18634a; --pos-soft:#e3f1ea;
+            --warn:#b07d2f; --warn-soft:#f6ecd8;
+            --neg:#b0413a; --neg-2:#95372f; --neg-soft:#f7e5e4;
+            --info:#1b4f8a; --info-2:#2b66a8; --info-soft:#dce8f6;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { display: flex; min-height: 100vh; background-color: var(--bg); color: var(--ink); }
+
+        /* Sidebar Vertical */
+        .sidebar { width: 260px; background-color: var(--navy); color: #FFFFFF; display: flex; flex-direction: column; padding: 20px 0; flex-shrink: 0; }
+        .sidebar .brand { text-align: center; padding: 0 15px 20px 15px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 20px; background: transparent; }
+        .sidebar .brand img { max-width: 100%; height: auto; display: block; margin: 0 auto; background: transparent; object-fit: contain; border-radius: 12px; }
+        .sidebar ul { list-style: none; }
+        .sidebar li a { display: block; padding: 15px 25px; color: var(--nav-link); text-decoration: none; font-weight: 500; transition: all 0.3s ease; border-left: 4px solid transparent; }
+        .sidebar li a:hover, .sidebar li a.active { color: #FFFFFF; background-color: rgba(255, 255, 255, 0.05); border-left-color: var(--accent); }
+
+        /* Main Content */
+        .main-content { flex: 1; padding: 40px; position: relative; padding-bottom: 100px; }
+        .form-container { background: var(--surface); border: 1px solid var(--line); padding: 30px; border-radius: 8px; box-shadow: 0 1px 2px rgba(15,27,45,.05), 0 6px 22px rgba(15,27,45,.07); }
+        .form-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
+        .form-group { display: flex; flex-direction: column; }
+        .col-2 { grid-column: span 2; } .col-4 { grid-column: span 4; }
+        label { font-size: 0.85rem; font-weight: 600; color: var(--navy); margin-bottom: 5px; }
+        input, select, textarea { padding: 8px 10px; border: 1px solid var(--line-strong); border-radius: 4px; font-size: 0.9rem; outline: none; color: var(--ink); background: var(--surface); }
+        input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+        input[readonly] { background-color: var(--surface-2); cursor: not-allowed; color: var(--muted); }
+        input:disabled, select:disabled, textarea:disabled { background-color: var(--surface-2); color: var(--muted); cursor: not-allowed; }
+
+        .alert { padding: 12px 15px; border-radius: 6px; margin-bottom: 20px; font-size: 0.88rem; line-height: 1.5; display: none; }
+        .alert-warn { background: var(--warn-soft); border: 1px solid #e6cf9a; color: #6b4a12; }
+        .alert-info { background: var(--info-soft); border: 1px solid #bcd3ee; color: var(--info); }
+        .alert.show { display: block; }
+
+        /* Botões Canto Inferior Direito */
+        .btn-container { position: fixed; bottom: 20px; right: 40px; display: flex; gap: 10px; background-color: rgba(234, 238, 243, 0.92); padding: 10px; border-radius: 8px; }
+        .btn-cancel { background-color: var(--neg); color: #FFFFFF; padding: 12px 24px; border: none; border-radius: 6px; font-weight: bold; text-decoration: none; cursor: pointer; }
+        .btn-cancel:hover { background-color: var(--neg-2); }
+        .btn-save { background-color: var(--pos); color: #FFFFFF; padding: 12px 24px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .btn-save:hover { background-color: var(--pos-2); }
+        .btn-save:disabled { opacity: .6; cursor: default; }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="brand">
+            <img src="logomarca.png" alt="MKW Gestão">
+        </div>
+        <ul>
+            <li><a href="index.html">Painel de Controle</a></li>
+            <li><a href="parceiros.html" class="active">Parceiros</a></li>
+            <li><a href="produtos_servicos.html">Produtos e Serviços</a></li>
+        </ul>
+    </aside>
+
+    <main class="main-content">
+        <h1 style="margin-bottom: 20px; color: var(--navy);" id="pageTitle">Cadastramento de Parceiro</h1>
+
+        <div id="alertBox" class="alert"></div>
+
+        <form class="form-container" id="formParceiro" onsubmit="salvar(event)">
+            <div class="form-grid">
+                <div class="form-group"><label>Coluna A - Código</label><input type="text" id="codigo" value="" readonly></div>
+                <div class="form-group col-2"><label>Coluna B - Razão Social</label><input type="text" id="razao" required oninput="this.value = this.value.toUpperCase(); updateUsuario();"></div>
+                <div class="form-group col-2"><label>Coluna L - Nome de Usuário</label><input type="text" id="usuario" value="" readonly></div>
+                <div class="form-group"><label>Coluna C - CPF ou CNPJ</label><input type="text" id="cpfCnpj" placeholder="000.000.000-00 ou 00.000.000/0000-00" required onblur="this.value = fmtCpfCnpj(this.value);"></div>
+                <div class="form-group"><label>Coluna D - E-mail</label><input type="email" id="email" required></div>
+                <div class="form-group"><label>Coluna E - Número de Contato</label><input type="text" id="contato" placeholder="(00) 0000-0000" required onblur="this.value = fmtContato(this.value);"></div>
+                <div class="form-group"><label>Coluna J - Situação</label><select id="situacao"><option>Ativa</option><option>Inativo</option></select></div>
+                <div class="form-group"><label>Coluna F - É Cliente?</label><select id="cliente"><option>Sim</option><option selected>Não</option></select></div>
+                <div class="form-group"><label>Coluna G - É Fornecedor?</label><select id="fornecedor"><option>Sim</option><option selected>Não</option></select></div>
+                <div class="form-group"><label>Coluna H - É Transportador?</label><select id="transportador"><option>Sim</option><option selected>Não</option></select></div>
+                <div class="form-group"><label>Coluna I - É Representante?</label><select id="representante"><option>Sim</option><option selected>Não</option></select></div>
+                <div class="form-group"><label>Coluna K - Data de Cadastro</label><input type="text" id="dataCad" readonly></div>
+                <div class="form-group"><label>Coluna T - Data de Abertura</label><input type="text" id="dataAbertura" placeholder="DD/MM/AAAA" onblur="this.value = fmtData(this.value);"></div>
+                <div class="form-group col-2"><label>Coluna M - Logradouro</label><input type="text" id="logradouro" oninput="this.value = this.value.toUpperCase();"></div>
+                <div class="form-group"><label>Coluna N - Número</label><input type="text" id="numero" oninput="this.value = this.value.toUpperCase();"></div>
+                <div class="form-group"><label>Coluna O - Complemento</label><input type="text" id="complemento" oninput="this.value = this.value.toUpperCase();"></div>
+                <div class="form-group"><label>Coluna P - Bairro</label><input type="text" id="bairro" oninput="this.value = this.value.toUpperCase();"></div>
+                <div class="form-group"><label>Coluna Q - Município</label><input type="text" id="municipio" oninput="this.value = this.value.toUpperCase();"></div>
+                <div class="form-group"><label>Coluna R - UF</label><input type="text" id="uf" maxlength="2" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase();"></div>
+                <div class="form-group"><label>Coluna S - CEP</label><input type="text" id="cep" placeholder="00.000-000" onblur="this.value = fmtCep(this.value);"></div>
+                <div class="form-group col-4"><label>Coluna U - Observações</label><textarea id="obs" rows="3" maxlength="2000"></textarea></div>
+            </div>
+            <div class="btn-container">
+                <a href="parceiros.html" class="btn-cancel">Cancelar</a>
+                <button type="submit" class="btn-save" id="btnSalvar">Salvar</button>
+            </div>
+        </form>
+    </main>
+
+    <script>
+        /* =========================================================
+           CONFIGURAÇÃO
+           Cole abaixo a URL /exec do Web App do Apps Script da base
+           de Parceiros (mesma URL usada em parceiros.html).
+           ========================================================= */
+        const API_URL = "";
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const mode = urlParams.get('mode');      // 'edit' | 'view' | null (novo)
+        const idParam = urlParams.get('id');
+
+        const el = id => document.getElementById(id);
+        const CAMPOS = ["codigo","razao","cpfCnpj","email","contato","cliente","fornecedor",
+                        "transportador","representante","situacao","dataCad","usuario",
+                        "logradouro","numero","complemento","bairro","municipio","uf",
+                        "cep","dataAbertura","obs"];
+
+        /* ---------- Formatação ---------- */
+        function soDigitos(v){ return String(v || "").replace(/\D/g, ""); }
+
+        function fmtCpfCnpj(v){
+            const d = soDigitos(v);
+            if (d.length <= 11){
+                return d.replace(/^(\d{3})(\d{3})(\d{3})(\d{0,2}).*/, '$1.$2.$3-$4').replace(/[.\-]+$/,'');
+            }
+            return d.slice(0,14).replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{0,2}).*/, '$1.$2.$3/$4-$5').replace(/[.\/\-]+$/,'');
+        }
+        function fmtContato(v){
+            const d = soDigitos(v);
+            if (d.length === 11) return d.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');       // celular
+            if (d.length === 10) return d.replace(/^(\d{2})(\d{4})(\d{4}).*/, '($1) $2-$3');       // fixo (00) 0000-0000
+            return v;
+        }
+        function fmtCep(v){
+            const d = soDigitos(v);
+            if (d.length === 8) return d.replace(/^(\d{2})(\d{3})(\d{3}).*/, '$1.$2-$3');          // 00.000-000
+            return v;
+        }
+        function fmtData(v){
+            const d = soDigitos(v);
+            if (d.length === 8) return d.replace(/^(\d{2})(\d{2})(\d{4}).*/, '$1/$2/$3');
+            return v;
+        }
+
+        function updateUsuario(){
+            el('usuario').value = (el('codigo').value + ' - ' + el('razao').value).toUpperCase();
+        }
+
+        function alerta(msg, tipo){
+            const a = el('alertBox');
+            a.className = 'alert show ' + (tipo === 'info' ? 'alert-info' : 'alert-warn');
+            a.innerHTML = msg;
+        }
+
+        function bloquearTudo(){
+            document.querySelectorAll('#formParceiro input, #formParceiro select, #formParceiro textarea')
+                .forEach(c => c.disabled = true);
+        }
+
+        async function iniciar(){
+            if (mode === 'view' || mode === 'edit'){
+                el('pageTitle').innerText = (mode === 'view') ? 'Visualizar Parceiro' : 'Alterar Parceiro';
+                if (!API_URL){
+                    alerta('<strong>Configuração pendente:</strong> cole a URL <code>/exec</code> do Apps Script para carregar o registro.');
+                    return;
+                }
+                try {
+                    const resp = await fetch(API_URL + '?action=get&id=' + encodeURIComponent(idParam), { method:'GET' });
+                    const json = await resp.json();
+                    if (!json.ok || !json.data) throw new Error(json.error || 'Registro não encontrado.');
+                    const r = json.data;
+                    CAMPOS.forEach(c => { if (el(c) && r[c] != null) el(c).value = r[c]; });
+                    updateUsuario();
+                } catch(err){
+                    alerta('<strong>Falha ao carregar o registro:</strong> ' + err.message);
+                    return;
+                }
+                if (mode === 'view'){
+                    bloquearTudo();
+                    el('btnSalvar').style.display = 'none';
+                }
+            } else {
+                el('dataCad').value = new Date().toLocaleDateString('pt-BR');
+                if (!API_URL){
+                    alerta('<strong>Configuração pendente:</strong> cole a URL <code>/exec</code> do Apps Script para gerar o código e gravar na base.');
+                    return;
+                }
+                try {
+                    const resp = await fetch(API_URL + '?action=next', { method:'GET' });
+                    const json = await resp.json();
+                    if (json.ok){ el('codigo').value = json.codigo || ''; updateUsuario(); }
+                } catch(err){
+                    alerta('Não foi possível obter o próximo código automaticamente. Ele será gerado ao salvar.', 'info');
+                }
+            }
+        }
+
+        async function salvar(e){
+            e.preventDefault();
+            if (!API_URL){
+                alerta('<strong>Não é possível salvar:</strong> configure a constante <code>API_URL</code> com a URL do Apps Script.');
+                return;
+            }
+            // Normaliza formatos antes de enviar
+            el('cpfCnpj').value = fmtCpfCnpj(el('cpfCnpj').value);
+            el('contato').value = fmtContato(el('contato').value);
+            el('cep').value     = fmtCep(el('cep').value);
+            el('dataAbertura').value = fmtData(el('dataAbertura').value);
+            updateUsuario();
+
+            const btn = el('btnSalvar');
+            btn.disabled = true; btn.textContent = 'Salvando...';
+
+            const payload = { mode: (mode === 'edit') ? 'update' : 'insert' };
+            CAMPOS.forEach(c => { if (el(c)) payload[c] = el(c).value; });
+
+            try {
+                const resp = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(payload)
+                });
+                const json = await resp.json();
+                if (!json.ok) throw new Error(json.error || 'Erro ao gravar na base.');
+                window.location.href = 'parceiros.html';
+            } catch(err){
+                alerta('<strong>Não foi possível salvar:</strong> ' + err.message);
+                btn.disabled = false; btn.textContent = 'Salvar';
+            }
+        }
+
+        iniciar();
+    </script>
+</body>
+</html>
