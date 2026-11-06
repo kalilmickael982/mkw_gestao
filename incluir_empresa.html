@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MKW Gestão - Cadastrar Empresa</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#14213D">
+    <link rel="icon" href="favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="apple-touch-icon-152.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="apple-touch-icon-167.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="MKW Gestão">
+    <style>
+        :root{
+            --bg:#eaeef3; --surface:#ffffff; --surface-2:#f7f9fc;
+            --ink:#0f1b2d; --ink-soft:#3d4a5c; --muted:#7c8899;
+            --line:#e3e8ef; --line-strong:#c9d2de;
+            --navy:#0f2136; --nav-link:#a9b6c7;
+            --accent:#b0894f; --accent-2:#9a7540; --accent-soft:#efe4cf;
+            --pos:#1f7a5c; --pos-2:#18634a; --pos-soft:#e3f1ea;
+            --warn:#b07d2f; --warn-soft:#f6ecd8;
+            --neg:#b0413a; --neg-2:#95372f; --neg-soft:#f7e5e4;
+            --info:#1b4f8a; --info-2:#2b66a8; --info-soft:#dce8f6;
+            --yellow:#f4b400; --yellow-2:#d99e00;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { display: flex; min-height: 100vh; background-color: var(--bg); color: var(--ink); }
+
+        /* Sidebar Vertical */
+        .sidebar { width: 260px; background-color: var(--navy); color: #FFFFFF; display: flex; flex-direction: column; padding: 15px 0 20px; flex-shrink: 0; position: sticky; top: 0; align-self: flex-start; height: 100vh; height: 100dvh; overflow-y: auto; }
+        .sidebar::-webkit-scrollbar { width: 8px; }
+        .sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,.18); border-radius: 4px; }
+        .sidebar { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.18) transparent; }
+        .sidebar .brand { display: flex; flex-direction: column; padding: 0 15px 20px 15px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 15px; background: transparent; }
+        .sidebar .brand img { max-width: 100%; height: auto; display: block; margin: 0 auto; background: transparent; object-fit: contain; border-radius: 12px; }
+        .sidebar ul { list-style: none; }
+        .sidebar li a { display: flex; align-items: center; justify-content: space-between; padding: 13px 25px; color: var(--nav-link); text-decoration: none; font-weight: 500; transition: all 0.2s ease; border-left: 4px solid transparent; }
+        .sidebar li a:hover, .sidebar li a.active { color: #FFFFFF; background-color: rgba(255, 255, 255, 0.05); border-left-color: var(--accent); }
+        .sidebar li a.soon { opacity: .55; cursor: default; }
+        .sidebar li a.soon:hover { background: transparent; border-left-color: transparent; color: var(--nav-link); }
+        .soon-tag { font-size: .62rem; background: rgba(255,255,255,.12); padding: 1px 6px; border-radius: 8px; margin-left: 6px; white-space: nowrap; }
+
+        /* Botão recolher / expandir menu */
+        .btn-collapse { align-self: flex-end; margin-bottom: 8px; background: rgba(255,255,255,.08); color: #fff; border: none; border-radius: 6px; padding: 4px 11px; font-weight: bold; cursor: pointer; font-size: 1.2rem; line-height: 1; }
+        .btn-collapse:hover { background: rgba(255,255,255,.16); }
+        .btn-expand { position: fixed; top: 14px; left: 14px; z-index: 70; display: none; align-items: center; background: var(--navy); color: #fff; border: none; border-radius: 6px; padding: 8px 13px; font-weight: bold; font-size: 1.3rem; line-height: 1; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,.25); }
+        .btn-expand:hover { background: #17304e; }
+        body.nav-collapsed .sidebar { display: none; }
+        body.nav-collapsed .btn-expand { display: inline-flex; }
+        body.nav-collapsed .main-content { padding-left: 72px; }
+        .backdrop { display: none; }
+
+        /* Rodapé da sidebar + botão Baixar App */
+        .sidebar-footer { margin-top: auto; padding: 15px 15px 0; }
+        .btn-install { width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: var(--accent); color: #fff; border: none; padding: 11px 14px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: .9rem; }
+        .btn-install:hover { background: var(--accent-2); }
+
+        /* Main Content */
+        .main-content { flex: 1; padding: 40px; position: relative; padding-bottom: 100px; }
+        .form-container { background: var(--surface); border: 1px solid var(--line); padding: 30px; border-radius: 8px; box-shadow: 0 1px 2px rgba(15,27,45,.05), 0 6px 22px rgba(15,27,45,.07); }
+        .form-section { margin-bottom: 26px; }
+        .form-section:last-of-type { margin-bottom: 0; }
+        .section-title { display: flex; align-items: center; gap: 8px; font-size: 1rem; font-weight: 700; color: var(--navy); padding-bottom: 8px; margin-bottom: 16px; border-bottom: 2px solid var(--line); }
+        .section-title::before { content: ""; width: 4px; height: 16px; background: var(--accent); border-radius: 2px; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 15px; }
+        .form-group { display: flex; flex-direction: column; }
+        .col-full { grid-column: 1 / -1; }
+        label { font-size: 0.85rem; font-weight: 600; color: var(--navy); margin-bottom: 5px; }
+        input, select, textarea { padding: 8px 10px; border: 1px solid var(--line-strong); border-radius: 4px; font-size: 0.9rem; outline: none; color: var(--ink); background: var(--surface); }
+        input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+        input[readonly] { background-color: var(--surface-2); cursor: not-allowed; color: var(--muted); }
+        input:disabled, select:disabled, textarea:disabled { background-color: var(--surface-2); color: var(--muted); cursor: not-allowed; }
+
+        .alert { padding: 12px 15px; border-radius: 6px; margin-bottom: 20px; font-size: 0.88rem; line-height: 1.5; display: none; }
+        .alert-warn { background: var(--warn-soft); border: 1px solid #e6cf9a; color: #6b4a12; }
+        .alert-info { background: var(--info-soft); border: 1px solid #bcd3ee; color: var(--info); }
+        .alert.show { display: block; }
+
+        /* Botões Canto Inferior Direito */
+        .btn-container { position: fixed; bottom: 20px; right: 40px; display: flex; gap: 10px; background-color: rgba(234, 238, 243, 0.92); padding: 10px; border-radius: 8px; z-index: 30; }
+        .btn-cancel { background-color: var(--neg); color: #FFFFFF; padding: 12px 24px; border: none; border-radius: 6px; font-weight: bold; text-decoration: none; cursor: pointer; }
+        .btn-cancel:hover { background-color: var(--neg-2); }
+        .btn-save { background-color: var(--pos); color: #FFFFFF; padding: 12px 24px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .btn-save:hover { background-color: var(--pos-2); }
+        .btn-save:disabled { opacity: .6; cursor: default; }
+        .btn-edit { background-color: var(--yellow); color: var(--navy); padding: 12px 24px; border: none; border-radius: 6px; font-weight: bold; text-decoration: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-edit:hover { background-color: var(--yellow-2); }
+
+        /* ===== Responsivo ===== */
+        @media (max-width: 768px){
+            body { flex-direction: column; }
+            .sidebar { position: fixed; top: 0; left: 0; height: 100dvh; width: 260px; z-index: 60; transform: translateX(0); transition: transform .25s ease; }
+            body.nav-collapsed .sidebar { display: flex; transform: translateX(-100%); }
+            body.nav-collapsed .main-content { padding-left: 20px; }
+            .backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 50; }
+            body:not(.nav-collapsed) .backdrop { display: block; }
+            .main-content { padding: 20px; padding-top: 64px; padding-bottom: 100px; }
+            .btn-container { right: 20px; left: 20px; justify-content: flex-end; }
+        }
+        @media (max-width: 480px){
+            .form-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <script>if (window.innerWidth <= 768) document.body.classList.add('nav-collapsed');</script>
+
+    <button class="btn-expand" id="btnExpand" onclick="exibirNav()" title="Exibir menu" aria-label="Exibir menu">&#9776;</button>
+    <div class="backdrop" id="backdrop" onclick="ocultarNav()"></div>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="brand">
+            <button class="btn-collapse" onclick="ocultarNav()" title="Ocultar menu" aria-label="Ocultar menu">&#9776;</button>
+            <img src="logomarca.png" alt="MKW Gestão">
+        </div>
+        <ul>
+            <li><a href="index.html">Início</a></li>
+            <li><a href="parceiros.html">Parceiros</a></li>
+            <li><a href="produtos_servicos.html">Produtos e Serviços</a></li>
+            <li><a href="saida.html">Nota Fiscal de Saída</a></li>
+            <li><a href="#" class="soon" onclick="return false;">Nota Fiscal de Entrada <span class="soon-tag">em breve</span></a></li>
+            <li><a href="#" class="soon" onclick="return false;">Contas a Receber <span class="soon-tag">em breve</span></a></li>
+            <li><a href="#" class="soon" onclick="return false;">Contas a Pagar <span class="soon-tag">em breve</span></a></li>
+            <li><a href="#" class="soon" onclick="return false;">Relatórios <span class="soon-tag">em breve</span></a></li>
+            <li><a href="config.html" class="active">Configurações</a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <button class="btn-install" id="btnInstall" type="button">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16"/></svg>
+                Baixar App
+            </button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <h1 style="margin-bottom: 20px; color: var(--navy);" id="pageTitle">Cadastramento de Empresa</h1>
+
+        <div id="alertBox" class="alert"></div>
+
+        <form class="form-container" id="formEmpresa" onsubmit="salvar(event)">
+
+            <section class="form-section">
+                <h3 class="section-title">Dados</h3>
+                <div class="form-grid">
+                    <div class="form-group"><label>Código</label><input type="text" id="codigo" value="" readonly></div>
+                    <div class="form-group"><label>Razão Social</label><input type="text" id="razao" required oninput="this.value = this.value.toUpperCase(); updateUsuario();"></div>
+                    <div class="form-group"><label>CPF ou CNPJ</label><input type="text" id="cpfCnpj" placeholder="000.000.000-00 ou 00.000.000/0000-00" required onblur="this.value = fmtCpfCnpj(this.value);"></div>
+                    <div class="form-group"><label>Inscrição</label><input type="text" id="inscricao" oninput="this.value = this.value.toUpperCase();"></div>
+                    <div class="form-group"><label>Regime Tributário</label>
+                        <select id="regime">
+                            <option>Simples Nacional</option>
+                            <option>MEI</option>
+                            <option>Lucro Presumido</option>
+                            <option>Lucro Real</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Situação</label><select id="situacao"><option>Ativa</option><option>Inativo</option></select></div>
+                </div>
+            </section>
+
+            <section class="form-section">
+                <h3 class="section-title">Endereço</h3>
+                <div class="form-grid">
+                    <div class="form-group col-full"><label>Logradouro</label><input type="text" id="logradouro" oninput="this.value = this.value.toUpperCase();"></div>
+                    <div class="form-group"><label>Número</label><input type="text" id="numero" oninput="this.value = this.value.toUpperCase();"></div>
+                    <div class="form-group"><label>Complemento</label><input type="text" id="complemento" oninput="this.value = this.value.toUpperCase();"></div>
+                    <div class="form-group"><label>Bairro</label><input type="text" id="bairro" oninput="this.value = this.value.toUpperCase();"></div>
+                    <div class="form-group"><label>Município</label><input type="text" id="municipio" oninput="this.value = this.value.toUpperCase();"></div>
+                    <div class="form-group"><label>UF</label><input type="text" id="uf" maxlength="2" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase();"></div>
+                    <div class="form-group"><label>CEP</label><input type="text" id="cep" placeholder="00.000-000" onblur="this.value = fmtCep(this.value);"></div>
+                </div>
+            </section>
+
+            <section class="form-section">
+                <h3 class="section-title">Contato</h3>
+                <div class="form-grid">
+                    <div class="form-group"><label>E-mail</label><input type="email" id="email" required></div>
+                    <div class="form-group"><label>Número de Contato</label><input type="text" id="contato" placeholder="(00) 0000-0000" required onblur="this.value = fmtContato(this.value);"></div>
+                </div>
+            </section>
+
+            <section class="form-section">
+                <h3 class="section-title">Detalhes</h3>
+                <div class="form-grid">
+                    <div class="form-group"><label>Data de Cadastro</label><input type="text" id="dataCad" readonly></div>
+                    <div class="form-group"><label>Nome de Usuário</label><input type="text" id="usuario" value="" readonly></div>
+                    <div class="form-group"><label>Data de Abertura</label><input type="text" id="dataAbertura" placeholder="DD/MM/AAAA" onblur="this.value = fmtData(this.value);"></div>
+                </div>
+            </section>
+
+            <div class="btn-container">
+                <a href="config_empresa.html" class="btn-cancel">Cancelar</a>
+                <a id="btnAlterar" class="btn-edit" style="display:none;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg> Alterar</a>
+                <button type="submit" class="btn-save" id="btnSalvar">Salvar</button>
+            </div>
+        </form>
+    </main>
+
+    <script>
+        /* =========================================================
+           CONFIGURAÇÃO
+           URL /exec do Web App do Apps Script da base de Configuração
+           da Empresa (mesma URL usada em config_empresa.html).
+           Backend correspondente: empresa.gs
+           ========================================================= */
+        const API_URL = "https://script.google.com/macros/s/AKfycbyOg-2sUgOpRC27JBdMsw-7oGiiDYWp6_16SU2GXXp1qU1JQpWKKuRdepRFDNJNWd1l1g/exec";
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const mode = urlParams.get('mode');      // 'edit' | 'view' | null (novo)
+        const idParam = urlParams.get('id');
+
+        const el = id => document.getElementById(id);
+        /* Ordem espelha as colunas A→R da base de Configuração da Empresa */
+        const CAMPOS = ["codigo","razao","cpfCnpj","inscricao","regime","email",
+                        "contato","situacao","dataCad","usuario","logradouro","numero",
+                        "complemento","bairro","municipio","uf","cep","dataAbertura"];
+
+        /* ---------- Formatação ---------- */
+        function soDigitos(v){ return String(v || "").replace(/\D/g, ""); }
+
+        function fmtCpfCnpj(v){
+            const d = soDigitos(v);
+            if (d.length <= 11){
+                return d.replace(/^(\d{3})(\d{3})(\d{3})(\d{0,2}).*/, '$1.$2.$3-$4').replace(/[.\-]+$/,'');
+            }
+            return d.slice(0,14).replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{0,2}).*/, '$1.$2.$3/$4-$5').replace(/[.\/\-]+$/,'');
+        }
+        function fmtContato(v){
+            const d = soDigitos(v);
+            if (d.length === 11) return d.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');       // celular
+            if (d.length === 10) return d.replace(/^(\d{2})(\d{4})(\d{4}).*/, '($1) $2-$3');       // fixo (00) 0000-0000
+            return v;
+        }
+        function fmtCep(v){
+            const d = soDigitos(v);
+            if (d.length === 8) return d.replace(/^(\d{2})(\d{3})(\d{3}).*/, '$1.$2-$3');          // 00.000-000
+            return v;
+        }
+        function fmtData(v){
+            const d = soDigitos(v);
+            if (d.length === 8) return d.replace(/^(\d{2})(\d{2})(\d{4}).*/, '$1/$2/$3');
+            return v;
+        }
+
+        function updateUsuario(){
+            el('usuario').value = (el('codigo').value + ' - ' + el('razao').value).toUpperCase();
+        }
+
+        function alerta(msg, tipo){
+            const a = el('alertBox');
+            a.className = 'alert show ' + (tipo === 'info' ? 'alert-info' : 'alert-warn');
+            a.innerHTML = msg;
+        }
+
+        function bloquearTudo(){
+            document.querySelectorAll('#formEmpresa input, #formEmpresa select, #formEmpresa textarea')
+                .forEach(c => c.disabled = true);
+        }
+
+        async function iniciar(){
+            if (mode === 'view' || mode === 'edit'){
+                el('pageTitle').innerText = (mode === 'view') ? 'Visualizar Empresa' : 'Alterar Empresa';
+                if (!API_URL){
+                    alerta('<strong>Configuração pendente:</strong> cole a URL <code>/exec</code> do Apps Script para carregar o registro.');
+                    return;
+                }
+                try {
+                    const resp = await fetch(API_URL + '?action=get&id=' + encodeURIComponent(idParam), { method:'GET' });
+                    const json = await resp.json();
+                    if (!json.ok || !json.data) throw new Error(json.error || 'Registro não encontrado.');
+                    const r = json.data;
+                    CAMPOS.forEach(c => { if (el(c) && r[c] != null) el(c).value = r[c]; });
+                    updateUsuario();
+                } catch(err){
+                    alerta('<strong>Falha ao carregar o registro:</strong> ' + err.message);
+                    return;
+                }
+                if (mode === 'view'){
+                    bloquearTudo();
+                    el('btnSalvar').style.display = 'none';
+                    const ba = el('btnAlterar');
+                    ba.href = 'incluir_empresa.html?id=' + encodeURIComponent(idParam) + '&mode=edit';
+                    ba.style.display = 'inline-flex';
+                }
+            } else {
+                el('dataCad').value = new Date().toLocaleDateString('pt-BR');
+                if (!API_URL){
+                    alerta('<strong>Configuração pendente:</strong> cole a URL <code>/exec</code> do Apps Script para gerar o código e gravar na base.');
+                    return;
+                }
+                try {
+                    const resp = await fetch(API_URL + '?action=next', { method:'GET' });
+                    const json = await resp.json();
+                    if (json.ok){ el('codigo').value = json.codigo || ''; updateUsuario(); }
+                } catch(err){
+                    alerta('Não foi possível obter o próximo código automaticamente. Ele será gerado ao salvar.', 'info');
+                }
+            }
+        }
+
+        async function salvar(e){
+            e.preventDefault();
+            if (!API_URL){
+                alerta('<strong>Não é possível salvar:</strong> configure a constante <code>API_URL</code> com a URL do Apps Script.');
+                return;
+            }
+            // Normaliza formatos antes de enviar
+            el('cpfCnpj').value = fmtCpfCnpj(el('cpfCnpj').value);
+            el('contato').value = fmtContato(el('contato').value);
+            el('cep').value     = fmtCep(el('cep').value);
+            el('dataAbertura').value = fmtData(el('dataAbertura').value);
+            updateUsuario();
+
+            const btn = el('btnSalvar');
+            btn.disabled = true; btn.textContent = 'Salvando...';
+
+            const payload = { mode: (mode === 'edit') ? 'update' : 'insert' };
+            CAMPOS.forEach(c => { if (el(c)) payload[c] = el(c).value; });
+
+            try {
+                const resp = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(payload)
+                });
+                const json = await resp.json();
+                if (!json.ok) throw new Error(json.error || 'Erro ao gravar na base.');
+                window.location.href = 'config_empresa.html';
+            } catch(err){
+                alerta('<strong>Não foi possível salvar:</strong> ' + err.message);
+                btn.disabled = false; btn.textContent = 'Salvar';
+            }
+        }
+
+        /* ===== Recolher / expandir barra lateral ===== */
+        function ocultarNav(){ document.body.classList.add('nav-collapsed'); }
+        function exibirNav(){ document.body.classList.remove('nav-collapsed'); }
+
+        /* ===== PWA: service worker ===== */
+        if ('serviceWorker' in navigator){
+            window.addEventListener('load', function(){
+                navigator.serviceWorker.register('service-worker.js').catch(function(){});
+            });
+        }
+
+        /* ===== Botão "Baixar App" (com tratamento iOS) ===== */
+        (function(){
+            var deferido = null;
+            var btn = document.getElementById('btnInstall');
+            if (!btn) return;
+            function isIOS(){ return /iphone|ipad|ipod/i.test(navigator.userAgent); }
+            function standalone(){ return window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true; }
+            if (standalone()){ btn.style.display = 'none'; return; }
+            window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); deferido = e; });
+            btn.addEventListener('click', async function(){
+                if (deferido){ deferido.prompt(); await deferido.userChoice; deferido = null; }
+                else if (isIOS()){ alert('Para instalar no iPhone/iPad:\n\n1. Toque no botão Compartilhar do Safari (ícone de seta para cima).\n2. Escolha "Adicionar à Tela de Início".'); }
+                else { alert('Para instalar: abra o menu do navegador (⋮) e escolha "Instalar aplicativo" ou "Adicionar à tela inicial".'); }
+            });
+            window.addEventListener('appinstalled', function(){ btn.style.display = 'none'; });
+        })();
+
+        iniciar();
+    </script>
+</body>
+</html>
