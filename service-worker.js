@@ -8,7 +8,7 @@
    Ao mudar qualquer arquivo do app, suba a versão do cache
    (CACHE_NOME) para forçar a atualização nos dispositivos.
    ========================================================= */
-const CACHE_NOME = 'mkw-gestao-v2';
+const CACHE_NOME = 'mkw-gestao-v3';
 const ASSETS = [
   './',
   './index.html',
@@ -16,6 +16,8 @@ const ASSETS = [
   './incluir_parceiro.html',
   './produtos_servicos.html',
   './incluir_produtos_servicos.html',
+  './config.html',
+  './config_empresa.html',
   './manifest.json',
   './logomarca.png',
   './favicon.ico',

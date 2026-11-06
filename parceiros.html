@@ -32,24 +32,33 @@
         body { display: flex; min-height: 100vh; background-color: var(--bg); color: var(--ink); }
 
         /* Sidebar Vertical */
-        .sidebar { width: 260px; background-color: var(--navy); color: #FFFFFF; display: flex; flex-direction: column; padding: 20px 0; flex-shrink: 0; position: sticky; top: 0; align-self: flex-start; height: 100vh; height: 100dvh; overflow-y: auto; }
+        .sidebar { width: 260px; background-color: var(--navy); color: #FFFFFF; display: flex; flex-direction: column; padding: 15px 0 20px; flex-shrink: 0; position: sticky; top: 0; align-self: flex-start; height: 100vh; height: 100dvh; overflow-y: auto; }
         .sidebar::-webkit-scrollbar { width: 8px; }
         .sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,.18); border-radius: 4px; }
         .sidebar { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.18) transparent; }
-        .sidebar .brand { text-align: center; padding: 0 15px 20px 15px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 20px; background: transparent; }
+        .sidebar .brand { display: flex; flex-direction: column; padding: 0 15px 20px 15px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 15px; background: transparent; }
         .sidebar .brand img { max-width: 100%; height: auto; display: block; margin: 0 auto; background: transparent; object-fit: contain; border-radius: 12px; }
         .sidebar ul { list-style: none; }
-        .sidebar li a { display: block; padding: 15px 25px; color: var(--nav-link); text-decoration: none; font-weight: 500; transition: all 0.3s ease; border-left: 4px solid transparent; }
+        .sidebar li a { display: flex; align-items: center; justify-content: space-between; padding: 13px 25px; color: var(--nav-link); text-decoration: none; font-weight: 500; transition: all 0.2s ease; border-left: 4px solid transparent; }
         .sidebar li a:hover, .sidebar li a.active { color: #FFFFFF; background-color: rgba(255, 255, 255, 0.05); border-left-color: var(--accent); }
+        .sidebar li a.soon { opacity: .55; cursor: default; }
+        .sidebar li a.soon:hover { background: transparent; border-left-color: transparent; color: var(--nav-link); }
+        .soon-tag { font-size: .62rem; background: rgba(255,255,255,.12); padding: 1px 6px; border-radius: 8px; margin-left: 6px; white-space: nowrap; }
+
+        /* Botão recolher / expandir menu */
+        .btn-collapse { align-self: flex-end; margin-bottom: 8px; background: rgba(255,255,255,.08); color: #fff; border: none; border-radius: 6px; padding: 4px 11px; font-weight: bold; cursor: pointer; font-size: 1.2rem; line-height: 1; }
+        .btn-collapse:hover { background: rgba(255,255,255,.16); }
+        .btn-expand { position: fixed; top: 14px; left: 14px; z-index: 70; display: none; align-items: center; background: var(--navy); color: #fff; border: none; border-radius: 6px; padding: 8px 13px; font-weight: bold; font-size: 1.3rem; line-height: 1; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,.25); }
+        .btn-expand:hover { background: #17304e; }
+        body.nav-collapsed .sidebar { display: none; }
+        body.nav-collapsed .btn-expand { display: inline-flex; }
+        body.nav-collapsed .main-content { padding-left: 72px; }
+        .backdrop { display: none; }
 
         /* Rodapé da sidebar + botão Baixar App */
-        .sidebar-footer { margin-top: auto; padding: 15px; border-top: 1px solid rgba(255,255,255,.1); }
+        .sidebar-footer { margin-top: auto; padding: 15px 15px 0; }
         .btn-install { width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: var(--accent); color: #fff; border: none; padding: 11px 14px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: .9rem; }
         .btn-install:hover { background: var(--accent-2); }
-
-        /* Topbar (apenas no celular) + overlay */
-        .topbar { display: none; }
-        .backdrop { display: none; }
 
         /* Main Content */
         .main-content { flex: 1; padding: 40px; overflow-x: auto; }
@@ -104,37 +113,40 @@
         .pg-btn:disabled { opacity: .45; cursor: default; }
         .pg-btn:not(:disabled):hover { border-color: var(--accent); color: var(--accent-2); }
 
-        /* ===== Responsivo: sidebar colapsável ===== */
+        /* ===== Responsivo ===== */
         @media (max-width: 768px){
             body { flex-direction: column; }
-            .topbar { display: flex; align-items: center; gap: 12px; background: var(--navy); color: #fff; padding: 12px 16px; position: sticky; top: 0; z-index: 40; }
-            .topbar .menu-toggle { background: transparent; border: none; color: #fff; font-size: 1.5rem; cursor: pointer; line-height: 1; padding: 0; }
-            .topbar .topbar-title { font-weight: 600; font-size: 1.05rem; }
-            .sidebar { position: fixed; top: 0; left: 0; height: 100%; height: 100dvh; width: 260px; z-index: 60; overflow-y: auto; transform: translateX(-100%); transition: transform .25s ease; }
-            .sidebar.open { transform: translateX(0); }
+            .sidebar { position: fixed; top: 0; left: 0; height: 100dvh; width: 260px; z-index: 60; transform: translateX(0); transition: transform .25s ease; }
+            body.nav-collapsed .sidebar { display: flex; transform: translateX(-100%); }
+            body.nav-collapsed .main-content { padding-left: 20px; }
             .backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 50; }
-            .backdrop.show { display: block; }
-            .main-content { padding: 20px; }
+            body:not(.nav-collapsed) .backdrop { display: block; }
+            .main-content { padding: 20px; padding-top: 64px; }
             .page-header h1 { font-size: 1.4rem; }
         }
     </style>
 </head>
 <body>
+    <script>if (window.innerWidth <= 768) document.body.classList.add('nav-collapsed');</script>
 
-    <header class="topbar">
-        <button class="menu-toggle" onclick="toggleSidebar()" aria-label="Abrir menu">&#9776;</button>
-        <span class="topbar-title">MKW Gestão</span>
-    </header>
-    <div class="backdrop" id="backdrop" onclick="toggleSidebar(false)"></div>
+    <button class="btn-expand" id="btnExpand" onclick="exibirNav()" title="Exibir menu" aria-label="Exibir menu">&#9776;</button>
+    <div class="backdrop" id="backdrop" onclick="ocultarNav()"></div>
 
     <aside class="sidebar" id="sidebar">
         <div class="brand">
+            <button class="btn-collapse" onclick="ocultarNav()" title="Ocultar menu" aria-label="Ocultar menu">&#9776;</button>
             <img src="logomarca.png" alt="MKW Gestão">
         </div>
         <ul>
-            <li><a href="index.html">Painel de Controle</a></li>
+            <li><a href="index.html">Início</a></li>
             <li><a href="parceiros.html" class="active">Parceiros</a></li>
             <li><a href="produtos_servicos.html">Produtos e Serviços</a></li>
+            <li><a href="saida.html">Nota Fiscal de Saída</a></li>
+            <li><a href="#" class="soon" onclick="return false;">Nota Fiscal de Entrada <span class="soon-tag">em breve</span></a></li>
+            <li><a href="#" class="soon" onclick="return false;">Contas a Receber <span class="soon-tag">em breve</span></a></li>
+            <li><a href="#" class="soon" onclick="return false;">Contas a Pagar <span class="soon-tag">em breve</span></a></li>
+            <li><a href="#" class="soon" onclick="return false;">Relatórios <span class="soon-tag">em breve</span></a></li>
+            <li><a href="config.html">Configurações</a></li>
         </ul>
         <div class="sidebar-footer">
             <button class="btn-install" id="btnInstall" type="button">
@@ -335,15 +347,9 @@
         function fecharAjuda(){ document.getElementById('modalAjuda').classList.remove('show'); }
         document.addEventListener('keydown', e => { if (e.key === 'Escape') fecharAjuda(); });
 
-        /* ===== Sidebar responsiva ===== */
-        function toggleSidebar(force){
-            const sb = document.getElementById('sidebar');
-            const bd = document.getElementById('backdrop');
-            if (!sb) return;
-            const abrir = (force === undefined) ? !sb.classList.contains('open') : force;
-            sb.classList.toggle('open', abrir);
-            if (bd) bd.classList.toggle('show', abrir);
-        }
+        /* ===== Recolher / expandir barra lateral ===== */
+        function ocultarNav(){ document.body.classList.add('nav-collapsed'); }
+        function exibirNav(){ document.body.classList.remove('nav-collapsed'); }
 
         /* ===== PWA: service worker ===== */
         if ('serviceWorker' in navigator){

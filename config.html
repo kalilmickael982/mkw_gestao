@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MKW Gestão - Configurações</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#14213D">
+    <link rel="icon" href="favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="apple-touch-icon-152.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="apple-touch-icon-167.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="MKW Gestão">
+    <style>
+        :root{
+            --bg:#eaeef3; --surface:#ffffff; --surface-2:#f7f9fc;
+            --ink:#0f1b2d; --ink-soft:#3d4a5c; --muted:#7c8899;
+            --line:#e3e8ef; --line-strong:#c9d2de;
+            --navy:#0f2136; --nav-link:#a9b6c7;
+            --accent:#b0894f; --accent-2:#9a7540; --accent-soft:#efe4cf;
+            --pos:#1f7a5c; --pos-2:#18634a; --pos-soft:#e3f1ea;
+            --warn:#b07d2f; --warn-soft:#f6ecd8;
+            --neg:#b0413a; --neg-2:#95372f; --neg-soft:#f7e5e4;
+            --info:#1b4f8a; --info-2:#2b66a8; --info-soft:#dce8f6;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { display: flex; min-height: 100vh; background-color: var(--bg); color: var(--ink); }
+
+        /* Sidebar Vertical */
+        .sidebar { width: 260px; background-color: var(--navy); color: #FFFFFF; display: flex; flex-direction: column; padding: 15px 0 20px; flex-shrink: 0; position: sticky; top: 0; align-self: flex-start; height: 100vh; height: 100dvh; overflow-y: auto; }
+        .sidebar::-webkit-scrollbar { width: 8px; }
+        .sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,.18); border-radius: 4px; }
+        .sidebar { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.18) transparent; }
+        .sidebar .brand { display: flex; flex-direction: column; padding: 0 15px 20px 15px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 15px; background: transparent; }
+        .sidebar .brand img { max-width: 100%; height: auto; display: block; margin: 0 auto; background: transparent; object-fit: contain; border-radius: 12px; }
+        .sidebar ul { list-style: none; }
+        .sidebar li a { display: flex; align-items: center; justify-content: space-between; padding: 13px 25px; color: var(--nav-link); text-decoration: none; font-weight: 500; transition: all 0.2s ease; border-left: 4px solid transparent; }
+        .sidebar li a:hover, .sidebar li a.active { color: #FFFFFF; background-color: rgba(255, 255, 255, 0.05); border-left-color: var(--accent); }
+        .sidebar li a.soon { opacity: .55; cursor: default; }
+        .sidebar li a.soon:hover { background: transparent; border-left-color: transparent; color: var(--nav-link); }
+        .soon-tag { font-size: .62rem; background: rgba(255,255,255,.12); padding: 1px 6px; border-radius: 8px; margin-left: 6px; white-space: nowrap; }
+
+        /* Botão recolher / expandir menu */
+        .btn-collapse { align-self: flex-end; margin-bottom: 8px; background: rgba(255,255,255,.08); color: #fff; border: none; border-radius: 6px; padding: 4px 11px; font-weight: bold; cursor: pointer; font-size: 1.2rem; line-height: 1; }
+        .btn-collapse:hover { background: rgba(255,255,255,.16); }
+        .btn-expand { position: fixed; top: 14px; left: 14px; z-index: 70; display: none; align-items: center; background: var(--navy); color: #fff; border: none; border-radius: 6px; padding: 8px 13px; font-weight: bold; font-size: 1.3rem; line-height: 1; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,.25); }
+        .btn-expand:hover { background: #17304e; }
+        body.nav-collapsed .sidebar { display: none; }
+        body.nav-collapsed .btn-expand { display: inline-flex; }
+        body.nav-collapsed .main-content { padding-left: 72px; }
+        .backdrop { display: none; }
+
+        /* Rodapé da sidebar + botão Baixar App */
+        .sidebar-footer { margin-top: auto; padding: 15px 15px 0; }
+        .btn-install { width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: var(--accent); color: #fff; border: none; padding: 11px 14px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: .9rem; }
+        .btn-install:hover { background: var(--accent-2); }
+
+        /* Main Content */
+        .main-content { flex: 1; padding: 40px; }
+        .page-header { margin-bottom: 24px; }
+        .page-header h1 { font-size: 1.8rem; color: var(--navy); }
+        .page-header p { color: var(--muted); margin-top: 6px; font-size: .95rem; }
+
+        /* Cartões de configuração */
+        .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px; }
+        .config-card { display: flex; align-items: center; gap: 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 20px; text-decoration: none; color: var(--ink); box-shadow: 0 1px 2px rgba(15,27,45,.05), 0 6px 22px rgba(15,27,45,.07); transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease; }
+        .config-card:hover { transform: translateY(-2px); border-color: var(--accent); box-shadow: 0 6px 26px rgba(15,27,45,.12); }
+        .config-card .ic { flex-shrink: 0; width: 48px; height: 48px; border-radius: 10px; background: var(--accent-soft); color: var(--accent-2); display: flex; align-items: center; justify-content: center; }
+        .config-card .txt { flex: 1; }
+        .config-card .txt h3 { font-size: 1.05rem; color: var(--navy); margin-bottom: 4px; }
+        .config-card .txt p { font-size: .85rem; color: var(--muted); line-height: 1.45; }
+        .config-card .chev { flex-shrink: 0; color: var(--muted); }
+        .config-card.soon { opacity: .6; pointer-events: none; }
+        .config-card.soon .ic { background: var(--line); color: var(--muted); }
+
+        /* ===== Responsivo ===== */
+        @media (max-width: 768px){
+            body { flex-direction: column; }
+            .sidebar { position: fixed; top: 0; left: 0; height: 100dvh; width: 260px; z-index: 60; transform: translateX(0); transition: transform .25s ease; }
+            body.nav-collapsed .sidebar { display: flex; transform: translateX(-100%); }
+            body.nav-collapsed .main-content { padding-left: 20px; }
+            .backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 50; }
+            body:not(.nav-collapsed) .backdrop { display: block; }
+            .main-content { padding: 20px; padding-top: 64px; }
+            .page-header h1 { font-size: 1.4rem; }
+        }
+    </style>
+</head>
+<body>
+    <script>if (window.innerWidth <= 768) document.body.classList.add('nav-collapsed');</script>
+
+    <button class="btn-expand" id="btnExpand" onclick="exibirNav()" title="Exibir menu" aria-label="Exibir menu">&#9776;</button>
+    <div class="backdrop" id="backdrop" onclick="ocultarNav()"></div>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="brand">
+            <button class="btn-collapse" onclick="ocultarNav()" title="Ocultar menu" aria-label="Ocultar menu">&#9776;</button>
+            <img src="logomarca.png" alt="MKW Gestão">
+        </div>
+        <ul>
+            <li><a href="index.html">Início</a></li>
+            <li><a href="parceiros.html">Parceiros</a></li>
+            <li><a href="produtos_servicos.html">Produtos e Serviços</a></li>
+            <li><a href="saida.html">Nota Fiscal de Saída</a></li>
+            <li><a href="#" class="soon" onclick="return false;">Nota Fiscal de Entrada <span class="soon-tag">em breve</span></a></li>
+            <li><a href="#" class="soon" onclick="return false;">Contas a Receber <span class="soon-tag">em breve</span></a></li>
+            <li><a href="#" class="soon" onclick="return false;">Contas a Pagar <span class="soon-tag">em breve</span></a></li>
+            <li><a href="#" class="soon" onclick="return false;">Relatórios <span class="soon-tag">em breve</span></a></li>
+            <li><a href="config.html" class="active">Configurações</a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <button class="btn-install" id="btnInstall" type="button">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16"/></svg>
+                Baixar App
+            </button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="page-header">
+            <h1>Configurações</h1>
+            <p>Gerencie os parâmetros e cadastros estruturais do sistema.</p>
+        </header>
+
+        <div class="card-grid">
+            <a class="config-card" href="config_empresa.html">
+                <span class="ic">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/><path d="M9 9v.01M9 12v.01M9 15v.01M9 18v.01"/></svg>
+                </span>
+                <span class="txt">
+                    <h3>Configurações da Empresa</h3>
+                    <p>Cadastro, dados fiscais e tributários das empresas do sistema.</p>
+                </span>
+                <span class="chev">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                </span>
+            </a>
+        </div>
+    </main>
+
+    <script>
+        /* ===== Recolher / expandir barra lateral ===== */
+        function ocultarNav(){ document.body.classList.add('nav-collapsed'); }
+        function exibirNav(){ document.body.classList.remove('nav-collapsed'); }
+
+        /* ===== PWA: service worker ===== */
+        if ('serviceWorker' in navigator){
+            window.addEventListener('load', function(){
+                navigator.serviceWorker.register('service-worker.js').catch(function(){});
+            });
+        }
+
+        /* ===== Botão "Baixar App" (com tratamento iOS) ===== */
+        (function(){
+            var deferido = null;
+            var btn = document.getElementById('btnInstall');
+            if (!btn) return;
+            function isIOS(){ return /iphone|ipad|ipod/i.test(navigator.userAgent); }
+            function standalone(){ return window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true; }
+            if (standalone()){ btn.style.display = 'none'; return; }
+            window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); deferido = e; });
+            btn.addEventListener('click', async function(){
+                if (deferido){ deferido.prompt(); await deferido.userChoice; deferido = null; }
+                else if (isIOS()){ alert('Para instalar no iPhone/iPad:\n\n1. Toque no botão Compartilhar do Safari (ícone de seta para cima).\n2. Escolha "Adicionar à Tela de Início".'); }
+                else { alert('Para instalar: abra o menu do navegador (⋮) e escolha "Instalar aplicativo" ou "Adicionar à tela inicial".'); }
+            });
+            window.addEventListener('appinstalled', function(){ btn.style.display = 'none'; });
+        })();
+    </script>
+</body>
+</html>

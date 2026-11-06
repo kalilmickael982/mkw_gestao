@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MKW Gestão - Configurações da Empresa</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#14213D">
+    <link rel="icon" href="favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="apple-touch-icon-152.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="apple-touch-icon-167.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="MKW Gestão">
+    <style>
+        :root{
+            --bg:#eaeef3; --surface:#ffffff; --surface-2:#f7f9fc;
+            --ink:#0f1b2d; --ink-soft:#3d4a5c; --muted:#7c8899;
+            --line:#e3e8ef; --line-strong:#c9d2de;
+            --navy:#0f2136; --nav-link:#a9b6c7;
+            --accent:#b0894f; --accent-2:#9a7540; --accent-soft:#efe4cf;
+            --pos:#1f7a5c; --pos-2:#18634a; --pos-soft:#e3f1ea;
+            --warn:#b07d2f; --warn-soft:#f6ecd8;
+            --neg:#b0413a; --neg-2:#95372f; --neg-soft:#f7e5e4;
+            --info:#1b4f8a; --info-2:#2b66a8; --info-soft:#dce8f6;
+            --yellow:#f4b400; --yellow-2:#d99e00;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { display: flex; min-height: 100vh; background-color: var(--bg); color: var(--ink); }
+
+        /* Sidebar Vertical */
+        .sidebar { width: 260px; background-color: var(--navy); color: #FFFFFF; display: flex; flex-direction: column; padding: 15px 0 20px; flex-shrink: 0; position: sticky; top: 0; align-self: flex-start; height: 100vh; height: 100dvh; overflow-y: auto; }
+        .sidebar::-webkit-scrollbar { width: 8px; }
+        .sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,.18); border-radius: 4px; }
+        .sidebar { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.18) transparent; }
+        .sidebar .brand { display: flex; flex-direction: column; padding: 0 15px 20px 15px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 15px; background: transparent; }
+        .sidebar .brand img { max-width: 100%; height: auto; display: block; margin: 0 auto; background: transparent; object-fit: contain; border-radius: 12px; }
+        .sidebar ul { list-style: none; }
+        .sidebar li a { display: flex; align-items: center; justify-content: space-between; padding: 13px 25px; color: var(--nav-link); text-decoration: none; font-weight: 500; transition: all 0.2s ease; border-left: 4px solid transparent; }
+        .sidebar li a:hover, .sidebar li a.active { color: #FFFFFF; background-color: rgba(255, 255, 255, 0.05); border-left-color: var(--accent); }
+        .sidebar li a.soon { opacity: .55; cursor: default; }
+        .sidebar li a.soon:hover { background: transparent; border-left-color: transparent; color: var(--nav-link); }
+        .soon-tag { font-size: .62rem; background: rgba(255,255,255,.12); padding: 1px 6px; border-radius: 8px; margin-left: 6px; white-space: nowrap; }
+
+        /* Botão recolher / expandir menu */
+        .btn-collapse { align-self: flex-end; margin-bottom: 8px; background: rgba(255,255,255,.08); color: #fff; border: none; border-radius: 6px; padding: 4px 11px; font-weight: bold; cursor: pointer; font-size: 1.2rem; line-height: 1; }
+        .btn-collapse:hover { background: rgba(255,255,255,.16); }
+        .btn-expand { position: fixed; top: 14px; left: 14px; z-index: 70; display: none; align-items: center; background: var(--navy); color: #fff; border: none; border-radius: 6px; padding: 8px 13px; font-weight: bold; font-size: 1.3rem; line-height: 1; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,.25); }
+        .btn-expand:hover { background: #17304e; }
+        body.nav-collapsed .sidebar { display: none; }
+        body.nav-collapsed .btn-expand { display: inline-flex; }
+        body.nav-collapsed .main-content { padding-left: 72px; }
+        .backdrop { display: none; }
+
+        /* Rodapé da sidebar + botão Baixar App */
+        .sidebar-footer { margin-top: auto; padding: 15px 15px 0; }
+        .btn-install { width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: var(--accent); color: #fff; border: none; padding: 11px 14px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: .9rem; }
+        .btn-install:hover { background: var(--accent-2); }
+
+        /* Main Content */
+        .main-content { flex: 1; padding: 40px; overflow-x: auto; }
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 12px; }
+        .page-header h1 { font-size: 1.8rem; color: var(--navy); }
+        .header-actions { display: flex; align-items: center; gap: 10px; }
+        .btn-incluir { background-color: var(--accent); color: #FFFFFF; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-incluir:hover { background-color: var(--accent-2); }
+        .btn-help { width: 40px; height: 40px; flex-shrink: 0; background: var(--surface); border: 1px solid var(--line-strong); color: var(--navy); border-radius: 6px; font-weight: bold; font-size: 1.1rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+        .btn-help:hover { border-color: var(--accent); color: var(--accent-2); }
+
+        /* Modal de ajuda (Conceito) */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(15,27,45,.5); z-index: 80; align-items: flex-start; justify-content: center; padding: 40px 20px; overflow-y: auto; }
+        .modal-overlay.show { display: flex; }
+        .modal { background: var(--surface); border-radius: 10px; max-width: 680px; width: 100%; box-shadow: 0 10px 40px rgba(0,0,0,.3); }
+        .modal-head { display: flex; justify-content: space-between; align-items: center; padding: 18px 22px; border-bottom: 1px solid var(--line); }
+        .modal-head h2 { font-size: 1.2rem; color: var(--navy); }
+        .modal-close { background: transparent; border: none; font-size: 1.6rem; line-height: 1; color: var(--muted); cursor: pointer; }
+        .modal-close:hover { color: var(--ink); }
+        .modal-body { padding: 20px 22px; font-size: .9rem; line-height: 1.6; color: var(--ink); }
+
+        .alert { padding: 12px 15px; border-radius: 6px; margin-bottom: 20px; font-size: 0.88rem; line-height: 1.5; display: none; }
+        .alert-warn { background: var(--warn-soft); border: 1px solid #e6cf9a; color: #6b4a12; }
+        .alert.show { display: block; }
+
+        /* Tabela */
+        .table-container { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 1px 2px rgba(15,27,45,.05), 0 6px 22px rgba(15,27,45,.07); overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem; }
+        th, td { padding: 10px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; color: var(--ink); }
+        th { background-color: var(--navy); color: #FFFFFF; font-weight: 600; }
+        tbody tr:hover { background-color: var(--surface-2); }
+        .filter-input { width: 100%; min-width: 90px; padding: 4px 6px; font-size: 0.8rem; border: 1px solid var(--line-strong); border-radius: 4px; outline: none; margin-top: 5px; }
+        .filter-input:focus { border-color: var(--accent); }
+        .empty-row td { text-align: center; color: var(--muted); padding: 24px; }
+
+        /* Badges de Status */
+        .badge-ativa { background-color: var(--pos-soft); color: var(--pos-2); font-weight: bold; padding: 4px 8px; border-radius: 4px; display: inline-block; }
+        .badge-inativo { background-color: var(--neg-soft); color: var(--neg-2); font-weight: bold; padding: 4px 8px; border-radius: 4px; display: inline-block; }
+
+        /* Botões de Ação */
+        .action-btn { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 4px; text-decoration: none; margin-right: 4px; }
+        .btn-alterar { background-color: var(--yellow); color: var(--navy); }
+        .btn-alterar:hover { background-color: var(--yellow-2); }
+        .btn-visualizar { background-color: var(--info-2); color: #fff; }
+        .btn-visualizar:hover { background-color: var(--info); }
+
+        /* Paginação */
+        .pagination-bar { margin-top: 12px; display: flex; justify-content: flex-end; align-items: center; gap: 12px; font-size: 0.85rem; color: var(--muted); }
+        .pg-btn { background: var(--surface); border: 1px solid var(--line-strong); color: var(--ink-soft); padding: 5px 12px; border-radius: 4px; cursor: pointer; font-weight: 600; }
+        .pg-btn:disabled { opacity: .45; cursor: default; }
+        .pg-btn:not(:disabled):hover { border-color: var(--accent); color: var(--accent-2); }
+
+        /* ===== Responsivo ===== */
+        @media (max-width: 768px){
+            body { flex-direction: column; }
+            .sidebar { position: fixed; top: 0; left: 0; height: 100dvh; width: 260px; z-index: 60; transform: translateX(0); transition: transform .25s ease; }
+            body.nav-collapsed .sidebar { display: flex; transform: translateX(-100%); }
+            body.nav-collapsed .main-content { padding-left: 20px; }
+            .backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 50; }
+            body:not(.nav-collapsed) .backdrop { display: block; }
+            .main-content { padding: 20px; padding-top: 64px; }
+            .page-header h1 { font-size: 1.4rem; }
+        }
+    </style>
+</head>
+<body>
+    <script>if (window.innerWidth <= 768) document.body.classList.add('nav-collapsed');</script>
+
+    <button class="btn-expand" id="btnExpand" onclick="exibirNav()" title="Exibir menu" aria-label="Exibir menu">&#9776;</button>
+    <div class="backdrop" id="backdrop" onclick="ocultarNav()"></div>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="brand">
+            <button class="btn-collapse" onclick="ocultarNav()" title="Ocultar menu" aria-label="Ocultar menu">&#9776;</button>
+            <img src="logomarca.png" alt="MKW Gestão">
+        </div>
+        <ul>
+            <li><a href="index.html">Início</a></li>
+            <li><a href="parceiros.html">Parceiros</a></li>
+            <li><a href="produtos_servicos.html">Produtos e Serviços</a></li>
+            <li><a href="saida.html">Nota Fiscal de Saída</a></li>
+            <li><a href="#" class="soon" onclick="return false;">Nota Fiscal de Entrada <span class="soon-tag">em breve</span></a></li>
+            <li><a href="#" class="soon" onclick="return false;">Contas a Receber <span class="soon-tag">em breve</span></a></li>
+            <li><a href="#" class="soon" onclick="return false;">Contas a Pagar <span class="soon-tag">em breve</span></a></li>
+            <li><a href="#" class="soon" onclick="return false;">Relatórios <span class="soon-tag">em breve</span></a></li>
+            <li><a href="config.html" class="active">Configurações</a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <button class="btn-install" id="btnInstall" type="button">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16"/></svg>
+                Baixar App
+            </button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="page-header">
+            <h1>Configurações da Empresa</h1>
+            <div class="header-actions">
+                <button class="btn-help" type="button" onclick="abrirAjuda()" title="O que é este painel?" aria-label="Ajuda">?</button>
+                <a href="incluir_empresa.html" class="btn-incluir"><i class="fa-solid fa-plus"></i> Incluir</a>
+            </div>
+        </header>
+
+        <div id="alertBox" class="alert alert-warn"></div>
+
+        <div class="table-container">
+            <table id="tabelaEmpresas">
+                <thead>
+                    <tr>
+                        <th>Código</th><th>Razão Social</th><th>CPF ou CNPJ</th><th>Inscrição</th><th>Regime Tributário</th><th>E-mail</th><th>Número de Contato</th><th>Situação</th><th>Data de Cadastro</th><th>Ação</th>
+                    </tr>
+                    <tr>
+                        <th><input type="text" class="filter-input" data-col="codigo" placeholder="Filtrar..."></th>
+                        <th><input type="text" class="filter-input" data-col="razao" placeholder="Filtrar..."></th>
+                        <th><input type="text" class="filter-input" data-col="cpfCnpj" placeholder="Filtrar..."></th>
+                        <th><input type="text" class="filter-input" data-col="inscricao" placeholder="Filtrar..."></th>
+                        <th><input type="text" class="filter-input" data-col="regime" placeholder="Filtrar..."></th>
+                        <th><input type="text" class="filter-input" data-col="email" placeholder="Filtrar..."></th>
+                        <th><input type="text" class="filter-input" data-col="contato" placeholder="Filtrar..."></th>
+                        <th><input type="text" class="filter-input" data-col="situacao" placeholder="Filtrar..."></th>
+                        <th><input type="text" class="filter-input" data-col="dataCad" placeholder="Filtrar..."></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="corpoTabela">
+                    <tr class="empty-row"><td colspan="10">Carregando registros...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pagination-bar">
+            <button class="pg-btn" id="btnPrev" onclick="mudarPagina(-1)">Anterior</button>
+            <span id="paginaInfo">—</span>
+            <button class="pg-btn" id="btnNext" onclick="mudarPagina(1)">Próximo</button>
+        </div>
+    </main>
+
+    <!-- Modal: Conceito do painel de empresas -->
+    <div class="modal-overlay" id="modalAjuda" onclick="if(event.target===this) fecharAjuda()">
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitulo">
+            <div class="modal-head">
+                <h2 id="modalTitulo">Configurações da Empresa</h2>
+                <button class="modal-close" type="button" onclick="fecharAjuda()" aria-label="Fechar">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Painel destinado ao gerenciamento centralizado das empresas cadastradas no sistema. Permite a consulta rápida do perfil cadastral e fiscal das organizações, além de disponibilizar atalhos para a inclusão de novas entidades e edição de dados operacionais e tributários.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* =========================================================
+           CONFIGURAÇÃO
+           Cole abaixo a URL /exec do Web App do Apps Script da base
+           de Configuração da Empresa (mesma URL usada em incluir_empresa.html).
+           Base (Google Sheets): 1df1N2jRRFvK5lVIItNh4PCUi2qmUUMxRW03nnz0LIZ8
+           ========================================================= */
+        const API_URL = "";
+
+        const PAGINA_TAMANHO = 100;   // Limite de 100 registros por página
+        const COLUNAS = ["codigo","razao","cpfCnpj","inscricao","regime","email","contato","situacao","dataCad"];
+        const BADGE_COLS = ["situacao"];
+
+        let todos = [], filtrados = [], paginaAtual = 1;
+        const filtros = {};
+        COLUNAS.forEach(c => filtros[c] = "");
+
+        function mostrarAlerta(msg){
+            const a = document.getElementById('alertBox');
+            a.innerHTML = msg; a.classList.add('show');
+        }
+
+        function classeBadge(valor){
+            const v = (valor || "").trim().toLowerCase();
+            if (v === "ativa" || v === "ativo") return "badge-ativa";
+            if (v === "inativo" || v === "inativa") return "badge-inativo";
+            return "";
+        }
+
+        function celula(col, valor){
+            const texto = escapar(valor);
+            if (BADGE_COLS.includes(col)){
+                const cls = classeBadge(valor);
+                return cls ? '<span class="' + cls + '">' + texto + '</span>' : texto;
+            }
+            return texto || "";
+        }
+
+        async function carregar(){
+            if (!API_URL){
+                mostrarAlerta('<strong>Configuração pendente:</strong> cole a URL <code>/exec</code> do Apps Script da base de Configuração da Empresa na constante <code>API_URL</code> no topo do script desta página.');
+                document.getElementById('corpoTabela').innerHTML =
+                    '<tr class="empty-row"><td colspan="10">Sem conexão com a base. Configure a API_URL.</td></tr>';
+                return;
+            }
+            try {
+                const resp = await fetch(API_URL + "?action=list", { method:"GET" });
+                const json = await resp.json();
+                if (!json.ok) throw new Error(json.error || "Resposta inválida da base.");
+                todos = json.data || [];
+                todos.sort((a,b) => String(a.codigo||"").localeCompare(String(b.codigo||""), 'pt-BR', { numeric:true }));
+                aplicarFiltros();
+            } catch(err){
+                mostrarAlerta('<strong>Não foi possível carregar a base:</strong> ' + err.message +
+                    '. Verifique se o Web App está publicado com acesso "Qualquer pessoa".');
+                document.getElementById('corpoTabela').innerHTML =
+                    '<tr class="empty-row"><td colspan="10">Falha ao carregar registros.</td></tr>';
+            }
+        }
+
+        function aplicarFiltros(){
+            filtrados = todos.filter(r =>
+                COLUNAS.every(col => {
+                    const termo = filtros[col];
+                    if (!termo) return true;
+                    return String(r[col] || "").toLowerCase().includes(termo.toLowerCase());
+                })
+            );
+            paginaAtual = 1;
+            render();
+        }
+
+        function render(){
+            const corpo = document.getElementById('corpoTabela');
+            const total = filtrados.length;
+            const totalPaginas = Math.max(1, Math.ceil(total / PAGINA_TAMANHO));
+            if (paginaAtual > totalPaginas) paginaAtual = totalPaginas;
+
+            const inicio = (paginaAtual - 1) * PAGINA_TAMANHO;
+            const pagina = filtrados.slice(inicio, inicio + PAGINA_TAMANHO);
+
+            if (pagina.length === 0){
+                corpo.innerHTML = '<tr class="empty-row"><td colspan="10">Nenhum registro encontrado.</td></tr>';
+            } else {
+                corpo.innerHTML = pagina.map(r => {
+                    const id = encodeURIComponent(r.codigo);
+                    const tds = COLUNAS.map(col => '<td>' + celula(col, r[col]) + '</td>').join('');
+                    return '<tr>' + tds +
+                        '<td>' +
+                            '<a href="incluir_empresa.html?id=' + id + '&mode=edit" class="action-btn btn-alterar" title="Alterar"><i class="fa-solid fa-pen"></i></a>' +
+                            '<a href="incluir_empresa.html?id=' + id + '&mode=view" class="action-btn btn-visualizar" title="Visualizar"><i class="fa-solid fa-magnifying-glass"></i></a>' +
+                        '</td>' +
+                    '</tr>';
+                }).join('');
+            }
+
+            const fim = Math.min(inicio + PAGINA_TAMANHO, total);
+            document.getElementById('paginaInfo').textContent =
+                total === 0 ? 'Nenhum registro'
+                : (inicio + 1) + '–' + fim + ' de ' + total + '  (pág. ' + paginaAtual + '/' + totalPaginas + ')';
+            document.getElementById('btnPrev').disabled = paginaAtual <= 1;
+            document.getElementById('btnNext').disabled = paginaAtual >= totalPaginas;
+        }
+
+        function mudarPagina(d){ paginaAtual += d; render(); }
+
+        function escapar(v){
+            return String(v == null ? "" : v)
+                .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+                .replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+        }
+
+        document.querySelectorAll('.filter-input').forEach(inp => {
+            inp.addEventListener('keyup', () => {
+                filtros[inp.dataset.col] = inp.value;
+                aplicarFiltros();
+            });
+        });
+
+        /* ===== Modal de ajuda (Conceito) ===== */
+        function abrirAjuda(){ document.getElementById('modalAjuda').classList.add('show'); }
+        function fecharAjuda(){ document.getElementById('modalAjuda').classList.remove('show'); }
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') fecharAjuda(); });
+
+        /* ===== Recolher / expandir barra lateral ===== */
+        function ocultarNav(){ document.body.classList.add('nav-collapsed'); }
+        function exibirNav(){ document.body.classList.remove('nav-collapsed'); }
+
+        /* ===== PWA: service worker ===== */
+        if ('serviceWorker' in navigator){
+            window.addEventListener('load', function(){
+                navigator.serviceWorker.register('service-worker.js').catch(function(){});
+            });
+        }
+
+        /* ===== Botão "Baixar App" (com tratamento iOS) ===== */
+        (function(){
+            var deferido = null;
+            var btn = document.getElementById('btnInstall');
+            if (!btn) return;
+            function isIOS(){ return /iphone|ipad|ipod/i.test(navigator.userAgent); }
+            function standalone(){ return window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true; }
+            if (standalone()){ btn.style.display = 'none'; return; }
+            window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); deferido = e; });
+            btn.addEventListener('click', async function(){
+                if (deferido){ deferido.prompt(); await deferido.userChoice; deferido = null; }
+                else if (isIOS()){ alert('Para instalar no iPhone/iPad:\n\n1. Toque no botão Compartilhar do Safari (ícone de seta para cima).\n2. Escolha "Adicionar à Tela de Início".'); }
+                else { alert('Para instalar: abra o menu do navegador (⋮) e escolha "Instalar aplicativo" ou "Adicionar à tela inicial".'); }
+            });
+            window.addEventListener('appinstalled', function(){ btn.style.display = 'none'; });
+        })();
+
+        carregar();
+    </script>
+</body>
+</html>
